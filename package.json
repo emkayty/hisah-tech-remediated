@@ -1,0 +1,48 @@
+{
+  "name": "hisah-tech-web",
+  "version": "1.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "audit:prod": "npm audit --omit=dev",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run audit:prod"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.0.2",
+    "bcryptjs": "3.0.3",
+    "clsx": "2.1.1",
+    "date-fns": "4.1.0",
+    "framer-motion": "12.23.26",
+    "html2canvas": "1.4.1",
+    "lucide-react": "0.468.0",
+    "next": "16.3.2",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "resend": "6.22.0",
+    "stripe": "22.5.0",
+    "tailwind-merge": "2.6.0",
+    "zod": "4.4.3",
+    "zustand": "5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.6",
+    "@types/node": "22.15.19",
+    "@types/react": "19.2.8",
+    "@types/react-dom": "19.2.3",
+    "autoprefixer": "10.4.20",
+    "eslint": "9.39.3",
+    "eslint-config-next": "16.3.2",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

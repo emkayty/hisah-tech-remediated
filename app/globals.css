@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar for native app feel */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prevent overscroll bounce */
+html, body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area insets for notch/home indicator */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Ensure tap targets are large enough for mobile */
+button, a {
+  min-height: 44px;
+  min-width: 44px;
+}
