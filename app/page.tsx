@@ -1,570 +1,258 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import BiosFilesDropdown from './components/BiosFilesDropdown';
+import { useEffect, useState } from 'react';
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  FileCode2,
+  Files,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+  X,
+} from 'lucide-react';
 
-const COUNTRIES = [
-  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia', 
-  'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium',
-  'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei',
-  'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 
-  'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 
-  'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica',
-  'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea',
-  'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia',
-  'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana',
-  'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland',
-  'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea',
-  'South Korea', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya',
-  'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali',
-  'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco',
-  'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal',
-  'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan',
-  'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
-  'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 
-  'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia',
-  'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 
-  'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan',
-  'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
-  'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
-  'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 
-  'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
+type AuthMode = 'login' | 'signup';
+type CurrentUser = { email: string; name?: string | null; username?: string | null };
+
+const resources = [
+  {
+    href: '/bios-files',
+    title: 'BIOS library',
+    description: 'Find firmware resources through a clean, device-first catalog built for practical work.',
+    icon: Files,
+    action: 'Browse BIOS files',
+  },
+  {
+    href: '/schematics',
+    title: 'Schematics',
+    description: 'Keep technical diagrams discoverable and easy to scan when you are deep in a repair.',
+    icon: FileCode2,
+    action: 'Explore schematics',
+  },
+  {
+    href: '/repair-guides',
+    title: 'Repair guides',
+    description: 'Move from symptom to next step with concise, useful repair guidance and practical context.',
+    icon: BookOpen,
+    action: 'Read repair guides',
+  },
 ];
 
 export default function HomePage() {
   const router = useRouter();
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [currentUser, setCurrentUser] = useState<{ name?: string; email: string; username?: string } | null>(null);
+  const [authMode, setAuthMode] = useState<AuthMode>('signup');
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [authError, setAuthError] = useState('');
-
-  const API_URL = '';
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    void checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const requestedMode = new URLSearchParams(window.location.search).get('auth');
+    if (requestedMode === 'login' || requestedMode === 'signup') {
+      setAuthMode(requestedMode);
+      setShowAuthModal(true);
+      setAuthError('');
+    }
   }, []);
 
   async function checkAuth() {
     try {
-      const res = await fetch(API_URL + '/api/auth/me');
-      const data = await res.json();
-      
-      if (data.user) {
-        setCurrentUser(data.user);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
+      const response = await fetch('/api/auth/me', { cache: 'no-store' });
+      const data = await response.json();
+      if (data.user) setCurrentUser(data.user);
+    } catch {
+      // Visitors can use the resource library without signing in.
     }
   }
 
-  function openAuthModal(mode: 'login' | 'signup') {
+  function openAuth(mode: AuthMode) {
     setAuthMode(mode);
-    setShowAuthModal(true);
     setAuthError('');
+    setShowAuthModal(true);
   }
 
-  function closeAuthModal() {
+  function closeAuth() {
     setShowAuthModal(false);
     setAuthError('');
+    router.replace('/', { scroll: false });
   }
 
-  async function handleAuthSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const name = formData.get('name') as string;
-    const username = formData.get('username') as string;
-    const country = formData.get('country') as string;
-    const whatsapp_number = formData.get('whatsapp_number') as string;
-    
-    const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/signup';
-    const body = authMode === 'login' 
-      ? { email, password }
-      : { email, password, name, username, country, whatsapp_number };
-    
+  async function handleAuth(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAuthError('');
+    setSubmitting(true);
+    const form = new FormData(event.currentTarget);
+    const isSignup = authMode === 'signup';
+
+    const body = isSignup
+      ? {
+          email: String(form.get('email') || ''),
+          password: String(form.get('password') || ''),
+          name: String(form.get('name') || ''),
+          country: String(form.get('country') || ''),
+          whatsapp_number: String(form.get('whatsapp_number') || ''),
+        }
+      : {
+          email: String(form.get('email') || ''),
+          password: String(form.get('password') || ''),
+        };
+
     try {
-      const res = await fetch(API_URL + endpoint, {
+      const response = await fetch(isSignup ? '/api/auth/signup' : '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        setAuthError(data.error || 'An error occurred');
+      const data = await response.json();
+      if (!response.ok) {
+        setAuthError(data.error || 'We could not complete that request. Please try again.');
         return;
       }
-      
       setCurrentUser(data.user);
-      closeAuthModal();
-      
-      if (authMode === 'signup') {
-        alert('Account created successfully! You are now logged in.');
-      }
-    } catch (error) {
-      console.error('Auth error:', error);
-      setAuthError('Network error. Please try again.');
-    }
-  }
-
-  async function logout() {
-    try {
-      await fetch(API_URL + '/api/auth/logout', { method: 'POST' });
-      setCurrentUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
+      closeAuth();
+    } catch {
+      setAuthError('A network issue interrupted the request. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   }
 
   return (
-    <div className="bg-gray-100">
-      {/* Top Navigation Bar */}
-      <div className="forum-header text-white py-3 px-4 shadow-md">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-3">
-              <img 
-                src="https://app-cdn.appgen.com/c7064d62-1c73-490d-ac77-d68af9351b9e/assets/uploaded_1770778750067_te5t3k.jpeg" 
-                alt="Hisah Tech Logo" 
-                className="w-10 h-10 rounded-full object-contain bg-white/10 p-1"
-              />
-              <h1 className="text-2xl font-bold">HISAH TECH</h1>
+    <>
+      <section className="hero">
+        <div className="hero__grid">
+          <div className="hero__copy">
+            <span className="eyebrow"><Sparkles size={14} /> Repair resources, without the noise</span>
+            <h1>The clear starting point for every <em>repair.</em></h1>
+            <p>Hisah Tech brings the essential technical resources into one calm, focused workspace—so you can spend less time searching and more time fixing.</p>
+            <div className="hero__actions">
+              <Link href="/bios-files" className="button button--primary">Explore the library <ArrowRight size={17} /></Link>
+              <button type="button" className="button button--outline" onClick={() => openAuth('signup')}>Create a free account</button>
             </div>
-            <div className="flex gap-4 text-sm items-center">
-              <Link href="/" className="hover:underline">Home</Link>
-              <BiosFilesDropdown />
-              <Link href="/schematics" className="hover:underline">Schematics</Link>
-              <Link href="/repair-guides" className="hover:underline">Guides</Link>
-              <Link href="/contact" className="hover:underline">Contact</Link>
+            <p className="hero__signal"><span /> The platform is live and ready for verified resources.</p>
+          </div>
+
+          <div className="hero-card" aria-label="Hisah Tech workflow preview">
+            <div className="hero-card__top">
+              <span className="hero-card__pill">Focused workflow</span>
+              <span className="hero-card__status"><b /> Ready when you are</span>
+            </div>
+            <div className="hero-card__panel">
+              <small>Start with the essentials</small>
+              <h2>Find the right next step.</h2>
+              <p>Choose a resource type, identify the device, and work with a simpler repair process.</p>
+              <div className="hero-card__steps">
+                <div className="hero-card__step"><span>1</span> Select the resource you need</div>
+                <div className="hero-card__step"><span>2</span> Search by device or board</div>
+                <div className="hero-card__step"><span>3</span> Work from verified information</div>
+              </div>
             </div>
           </div>
-          <div className="flex gap-4 text-sm">
-            <span className="bg-white/20 px-3 py-1 rounded">
-              {currentUser ? `Welcome, ${currentUser.username || currentUser.name || currentUser.email}` : 'Welcome, Guest'}
-            </span>
-            {!currentUser ? (
-              <>
-                <button onClick={() => openAuthModal('signup')} className="hover:underline">Register</button>
-                <button onClick={() => openAuthModal('login')} className="hover:underline">Login</button>
-              </>
-            ) : (
-              <button onClick={logout} className="hover:underline">Logout</button>
-            )}
+        </div>
+      </section>
+
+      <section className="feature-section">
+        <div className="page-shell">
+          <div className="section-heading">
+            <span className="eyebrow"><Wrench size={14} /> Built around real repair work</span>
+            <h2>Everything is organized around the job in front of you.</h2>
+            <p>Instead of a cluttered forum feed, you get a clear path to the technical information that matters.</p>
+          </div>
+          <div className="resource-grid">
+            {resources.map(({ href, title, description, icon: Icon, action }) => (
+              <Link key={href} href={href} className="resource-card">
+                <span className="resource-card__icon"><Icon size={23} /></span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <span className="resource-card__link">{action} <ArrowRight size={15} /></span>
+              </Link>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="breadcrumb">
-          <a href="#" className="text-blue-600 hover:underline">Hisah Tech</a> » <span>Board Index</span>
+      <section className="page-shell" aria-labelledby="library-status-heading">
+        <div className="empty-state">
+          <div>
+            <span className="empty-state__icon"><ShieldCheck size={25} /></span>
+            <h2 id="library-status-heading">A clean library, ready for trusted resources.</h2>
+            <p>All demonstration material has been removed. New BIOS files, schematics, and guides will appear here as they are added and reviewed—keeping the experience honest, useful, and easy to trust.</p>
+            <div className="empty-state__actions">
+              <Link href="/contact" className="button button--primary">Request a resource <ArrowRight size={16} /></Link>
+              <Link href="/repair-guides" className="button button--outline">See repair guides</Link>
+            </div>
+          </div>
+          <aside className="empty-state__aside">
+            <strong>Designed for clarity</strong>
+            <p>No inflated counters, fake activity, or sample member profiles. Just a straightforward place to build a quality repair library.</p>
+          </aside>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 pb-8">
-        
-        {/* Stats Bar */}
-        <div className="stats-box p-4 mb-6">
-          <div className="flex justify-between items-center text-sm">
-            <div>Total Posts: 1,847,392 | 
-                Total Topics: 142,883 | 
-                Total Members: 234,567</div>
+      <section className="how-section">
+        <div className="page-shell">
+          <div className="section-heading">
+            <span className="eyebrow"><CheckCircle2 size={14} /> A simpler way to get moving</span>
+            <h2>Three steps. One clear workflow.</h2>
+          </div>
+          <div className="steps-grid">
+            <article className="step-card"><span className="step-card__number">01</span><h3>Choose your resource</h3><p>Start with firmware, a schematic, or a repair guide—each path is easy to find from any device.</p></article>
+            <article className="step-card"><span className="step-card__number">02</span><h3>Search with confidence</h3><p>Use the simplest relevant device, board, or model detail to narrow your result without unnecessary friction.</p></article>
+            <article className="step-card"><span className="step-card__number">03</span><h3>Make the next repair decision</h3><p>Use the resource as a practical next step, then return whenever you need another piece of the puzzle.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="cta-band">
+        <div className="page-shell" style={{ paddingTop: 0, paddingBottom: 0 }}>
+          <div className="cta-band__inner">
             <div>
-              <span className="font-bold">Welcome our newest member:</span> <a href="#" className="text-blue-600">usman</a>
+              <h2>{currentUser ? `Welcome back${currentUser.name ? `, ${currentUser.name}` : ''}.` : 'Build your repair workflow with Hisah Tech.'}</h2>
+              <p>{currentUser ? 'Your account is ready whenever you need to save, contribute, or explore.' : 'Create an account to take part as the resource library grows.'}</p>
             </div>
+            {currentUser ? <Link href="/dashboard" className="button">Go to dashboard <ArrowRight size={16} /></Link> : <button type="button" className="button" onClick={() => openAuth('signup')}>Create account <ArrowRight size={16} /></button>}
           </div>
         </div>
+      </section>
 
-        {/* General Discussion */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 font-bold text-lg mb-2">
-            General Discussion
-          </div>
-          
-          <div className="forum-category mb-2">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">Troubleshooting &amp; Repair</a>
-                </h3>
-                <p className="text-gray-600 text-sm">Get help diagnosing and fixing hardware problems. Post your issues here.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">Admin</a>, <a href="#" className="text-blue-600">RepairGuru</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">45,892</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">342,108</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">ElectroFix</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">Dead PSU - no power</a></div>
-                <div className="text-gray-400">Today at 2:34 PM</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="forum-category mb-2">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">Success Stories</a>
-                </h3>
-                <p className="text-gray-600 text-sm">Share your repair victories and restoration projects.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">Admin</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">8,432</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">67,219</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">RetroGamer</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">Fixed my CRT monitor!</a></div>
-                <div className="text-gray-400">Today at 1:15 PM</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="forum-category">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">General Hardware Discussion</a>
-                </h3>
-                <p className="text-gray-600 text-sm">Discuss hardware news, reviews, and general electronics topics.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">Admin</a>, <a href="#" className="text-blue-600">HardwareNerd</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">12,847</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">98,765</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">CircuitKing</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">Best soldering iron?</a></div>
-                <div className="text-gray-400">Yesterday at 11:42 PM</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Computer Hardware */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 font-bold text-lg mb-2">
-            Computer Hardware
-          </div>
-          
-          <div className="forum-category mb-2">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20,18C20.5,18 21,18.2 21.4,18.6C21.8,19 22,19.5 22,20V22H2V20C2,19.5 2.2,19 2.6,18.6C3,18.2 3.5,18 4,18H6V16C6,15.2 6.2,14.4 6.6,13.7L3,8V7H21V8L17.4,13.7C17.8,14.4 18,15.2 18,16V18H20M4.5,8.9L7,12.4V16C7,16.5 7.2,17 7.6,17.4C8,17.8 8.5,18 9,18H15C15.5,18 16,17.8 16.4,17.4C16.8,17 17,16.5 17,16V12.4L19.5,8.9H4.5M10,10H14V11H10V10M10,12H14V13H10V12Z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">Motherboard Repair</a>
-                </h3>
-                <p className="text-gray-600 text-sm">Diagnose and repair motherboard issues, bios problems, and chipset failures.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">MoboDoc</a>, <a href="#" className="text-blue-600">ChipWhisperer</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">18,902</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">156,438</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">PCRepair Pro</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">No POST, no beep</a></div>
-                <div className="text-gray-400">Today at 4:15 PM</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="forum-category mb-2">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4,6H20V16H4M20,18A2,2 0 0,0 22,16V6C22,4.89 21.1,4 20,4H4C2.89,4 2,4.89 2,6V16A2,2 0 0,0 4,18H0V20H24V18H20Z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">Monitor &amp; Display Repair</a>
-                </h3>
-                <p className="text-gray-600 text-sm">LCD, LED, and CRT monitor troubleshooting and repair.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">DisplayDoc</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">9,234</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">72,103</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">ScreenFixer</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">Samsung won&apos;t turn on</a></div>
-                <div className="text-gray-400">Today at 10:22 AM</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="forum-category">
-            <div className="flex p-4">
-              <div className="w-12 flex-shrink-0">
-                <svg className="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-blue-700 font-bold text-base mb-1">
-                  <a href="#" className="hover:underline">Graphics Cards &amp; GPUs</a>
-                </h3>
-                <p className="text-gray-600 text-sm">Video card troubleshooting, fan replacement, and thermal issues.</p>
-                <div className="text-xs text-gray-500 mt-1">Moderators: <a href="#" className="text-blue-600">GPUGuru</a></div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">7,651</div>
-                <div className="text-xs text-gray-500">Topics</div>
-              </div>
-              <div className="w-20 text-center text-sm">
-                <div className="font-bold text-gray-700">58,209</div>
-                <div className="text-xs text-gray-500">Posts</div>
-              </div>
-              <div className="w-48 text-xs">
-                <div className="text-gray-600"><span className="font-bold">Last post</span> by <a href="#" className="text-blue-600">VideoTech</a></div>
-                <div className="text-gray-500">in <a href="#" className="text-blue-600">RTX 3080 artifacts</a></div>
-                <div className="text-gray-400">Yesterday at 5:45 PM</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Info Box */}
-        <div className="stats-box p-4">
-          <div className="flex gap-8 text-sm">
-            <div>
-              <span className="font-bold text-blue-700">Who&apos;s Online</span>
-              <div className="text-gray-600 mt-2">
-                547 users active (127 members and 420 guests)<br />
-                Most online today: 892 at 2:15 PM
-              </div>
-            </div>
-            <div className="flex-1">
-              <span className="font-bold text-blue-700">Today&apos;s Birthdays</span>
-              <div className="text-gray-600 mt-2">
-                <a href="#" className="text-blue-600">SolderKing</a> (34), <a href="#" className="text-blue-600">CapMaster</a> (29), <a href="#" className="text-blue-600">ElectroWiz</a> (41)
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Footer */}
-      <div className="bg-gray-800 text-white py-6 mt-8">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <div className="mb-3">
-            <a href="#" className="hover:underline mx-2">Home</a> |
-            <a href="#" className="hover:underline mx-2">Help</a> |
-            <a href="#" className="hover:underline mx-2">Search</a> |
-            <Link href="/about-us" className="hover:underline mx-2">About</Link> |
-            <Link href="/contact" className="hover:underline mx-2">Contact</Link>
-          </div>
-          <div className="text-gray-400 text-xs">© 2024 Hisah Tech. All rights reserved.
-              Powered by Community Forums Software</div>
-        </div>
-      </div>
-
-      {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {authMode === 'login' ? 'Login' : 'Register'}
-              </h2>
-              <button onClick={closeAuthModal} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="auth-backdrop" role="dialog" aria-modal="true" aria-labelledby="auth-heading">
+          <div className="auth-modal">
+            <div className="auth-modal__heading">
+              <div>
+                <span className="eyebrow">Hisah Tech account</span>
+                <h2 id="auth-heading">{authMode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
+                <p>{authMode === 'signup' ? 'A few details help us keep the community useful and secure.' : 'Sign in to continue where you left off.'}</p>
+              </div>
+              <button type="button" className="icon-button" onClick={closeAuth} aria-label="Close sign in dialog"><X size={18} /></button>
             </div>
-            
-            {authError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {authError}
-              </div>
-            )}
-            
-            <form onSubmit={handleAuthSubmit}>
-              {authMode === 'signup' && (
-                <>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                    <input 
-                      type="text" 
-                      name="username"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" 
-                      placeholder="Choose a unique username"
-                    />
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Name (Optional)</label>
-                    <input 
-                      type="text" 
-                      name="name"
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" 
-                      placeholder="Your full name"
-                    />
-                  </div>
-                </>
-              )}
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  required 
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" 
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <input 
-                  type="password" 
-                  name="password"
-                  required 
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" 
-                />
-              </div>
 
+            {authError && <div className="form-error" role="alert">{authError}</div>}
+            <form className="auth-form" onSubmit={handleAuth}>
               {authMode === 'signup' && (
-                <>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">WhatsApp Number</label>
-                    <input 
-                      type="tel" 
-                      name="whatsapp_number"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                      placeholder="+1234567890"
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Country</label>
-                    <select 
-                      name="country"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="">Select your country</option>
-                      {COUNTRIES.map((country) => (
-                        <option key={country} value={country}>{country}</option>
-                      ))}
-                    </select>
-                  </div>
-                </>
-              )}
-              
-              {authMode === 'login' && (
-                <div className="mb-6 text-right">
-                  <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline" onClick={closeAuthModal}>
-                    Forgot password?
-                  </Link>
+                <div className="auth-grid">
+                  <label><span className="form-label">Your name <small>(optional)</small></span><input className="form-control" name="name" autoComplete="name" placeholder="Name" /></label>
+                  <label><span className="form-label">Country</span><input className="form-control" name="country" autoComplete="country-name" placeholder="Country" required /></label>
                 </div>
               )}
-              
-              <button 
-                type="submit" 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-              >
-                {authMode === 'login' ? 'Login' : 'Register'}
-              </button>
-              
-              <div className="text-center text-sm">
-                <span>{authMode === 'login' ? "Don't have an account?" : 'Already have an account?'}</span>
-                <button 
-                  type="button" 
-                  onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} 
-                  className="text-blue-600 hover:underline ml-1"
-                >
-                  {authMode === 'login' ? 'Register' : 'Login'}
-                </button>
-              </div>
+              <label><span className="form-label">Email address</span><input className="form-control" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
+              <label><span className="form-label">Password</span><input className="form-control" name="password" type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} placeholder={authMode === 'signup' ? 'At least 12 characters' : 'Your password'} minLength={authMode === 'signup' ? 12 : undefined} required /></label>
+              {authMode === 'signup' && <label><span className="form-label">WhatsApp number</span><input className="form-control" name="whatsapp_number" type="tel" autoComplete="tel" placeholder="Include country code" required /></label>}
+              {authMode === 'login' && <Link href="/forgot-password" className="resource-card__link" onClick={closeAuth}>Forgot your password?</Link>}
+              <button className="button button--primary" type="submit" disabled={submitting}>{submitting ? 'Please wait…' : authMode === 'signup' ? 'Create account' : 'Sign in'} <ArrowRight size={16} /></button>
             </form>
+            <p className="auth-switch">{authMode === 'signup' ? 'Already have an account?' : 'New to Hisah Tech?'} <button type="button" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : 'signup'); setAuthError(''); }}>{authMode === 'signup' ? 'Sign in' : 'Create one'}</button></p>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        body {
-          font-family: Verdana, Arial, sans-serif;
-          background-color: #f5f5f5;
-        }
-        .forum-header {
-          background: linear-gradient(180deg, #4a90e2 0%, #2c5aa0 100%);
-          border-bottom: 3px solid #1e3a5f;
-        }
-        .forum-category {
-          background: white;
-          border: 1px solid #ddd;
-          transition: all 0.2s;
-        }
-        .forum-category:hover {
-          background: #f9f9f9;
-          border-color: #4a90e2;
-        }
-        .stats-box {
-          background: #fff;
-          border: 1px solid #ddd;
-          border-radius: 3px;
-        }
-        .breadcrumb {
-          font-size: 11px;
-          color: #666;
-        }
-      `}</style>
-    </div>
+    </>
   );
 }

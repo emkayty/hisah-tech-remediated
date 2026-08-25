@@ -1,239 +1,54 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { ArrowRight, Mail, MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
+
+const whatsappHref = 'https://wa.me/2348031233064?text=Hello%21%20I%20need%20help%20with%20Hisah%20Tech.';
 
 export default function ContactPage() {
-  const pathname = usePathname();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: 'General Inquiry',
-    message: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Message sent successfully!');
-  };
-
   return (
-    <div className="bg-gray-100 min-h-screen" style={{ fontFamily: 'Verdana, Arial, Helvetica, sans-serif' }}>
-      <style jsx global>{`
-        body {
-          font-family: Verdana, Arial, sans-serif;
-          background-color: #f5f5f5;
-        }
-        .forum-header {
-          background: linear-gradient(180deg, #4a90e2 0%, #2c5aa0 100%);
-          border-bottom: 3px solid #1e3a5f;
-        }
-        .forum-category {
-          background: white;
-          border: 1px solid #ddd;
-          transition: all 0.2s;
-        }
-        .forum-category:hover {
-          background: #f9f9f9;
-          border-color: #4a90e2;
-        }
-        .stats-box {
-          background: #fff;
-          border: 1px solid #ddd;
-          border-radius: 3px;
-        }
-        .breadcrumb {
-          font-size: 11px;
-          color: #666;
-        }
-      `}</style>
+    <div className="page-shell">
+      <section className="contact-hero">
+        <span className="eyebrow"><ShieldCheck size={14} /> Direct, practical support</span>
+        <h1>Tell us what you are working on.</h1>
+        <p>Need a specific repair resource, have a question, or want to suggest an addition to the library? Choose the fastest channel for you.</p>
+      </section>
 
-      {/* Top Navigation Bar */}
-      <div className="forum-header text-white py-3 px-4 shadow-md">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-              </svg>
-              <h1 className="text-2xl font-bold">HISAH TECH</h1>
-            </div>
-            <div className="flex gap-4 text-sm">
-              <Link href="/" className="hover:underline">Home</Link>
-              <Link href="/bios-files" className="hover:underline">BIOS Files</Link>
-              <Link href="/schematics" className="hover:underline">Schematics</Link>
-              <Link href="/repair-guides" className="hover:underline">Guides</Link>
-              <Link href="/contact" className="hover:underline">Contact</Link>
-            </div>
-          </div>
-        </div>
+      <div className="contact-grid">
+        <article className="contact-card contact-card--primary">
+          <span className="contact-card__icon"><MessageCircle size={23} /></span>
+          <span className="eyebrow">Fastest response</span>
+          <h2>Message us on WhatsApp.</h2>
+          <p>Send the device model, board detail, or resource you need. A short, clear request helps us respond quickly.</p>
+          <a href={whatsappHref} target="_blank" rel="noreferrer" className="button button--primary">Open WhatsApp <ArrowRight size={16} /></a>
+        </article>
+
+        <article className="contact-card">
+          <span className="contact-card__icon"><Mail size={22} /></span>
+          <h2>Email support</h2>
+          <p>For detailed questions or resource requests, email the team with as much device information as you have.</p>
+          <a className="contact-link" href="mailto:hisahtechltd@gmail.com">hisahtechltd@gmail.com <ArrowRight size={15} /></a>
+        </article>
+
+        <article className="contact-card">
+          <span className="contact-card__icon"><Phone size={22} /></span>
+          <h2>Call the team</h2>
+          <p>Prefer a direct conversation? Reach the Hisah Tech team by phone during normal business hours.</p>
+          <a className="contact-link" href="tel:+2347030648418">+234 703 064 8418 <ArrowRight size={15} /></a>
+        </article>
       </div>
 
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="breadcrumb">
-          <Link href="/" className="text-blue-600 hover:underline">Hisah Tech</Link> » <span>Contact Us</span>
+      <section className="contact-location">
+        <div>
+          <span className="contact-location__icon"><MapPin size={22} /></span>
+          <span className="eyebrow">Where to find us</span>
+          <h2>Hisah Tech, Minna</h2>
+          <p>Suite B23/B22, Peniel Albarka Plaza<br />Opposite Federal High Court<br />Minna, Niger State, Nigeria</p>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 pb-8">
-        
-        {/* Header Section */}
-        <div className="bg-white p-6 mb-6 border border-gray-300 rounded shadow-sm">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Contact Us</h2>
-          <p className="text-gray-600">
-            Have questions about our services? Need technical support? We're here to help.
-          </p>
+        <div className="contact-location__note">
+          <strong>For the best support request</strong>
+          <p>Include the device brand and model, the board number where available, and a concise description of the issue.</p>
+          <Link href="/bios-files" className="resource-card__link">Explore the resource library <ArrowRight size={15} /></Link>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          {/* Contact Form */}
-          <div className="bg-white p-6 border border-gray-300 rounded shadow-sm">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Send us a Message</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
-                <input 
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                <input 
-                  type="email" 
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Subject</label>
-                <select 
-                  value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                >
-                  <option>General Inquiry</option>
-                  <option>Technical Support</option>
-                  <option>Service Request</option>
-                  <option>Business Partnership</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Message</label>
-                <textarea 
-                  rows={6} 
-                  value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                  required
-                ></textarea>
-              </div>
-              
-              <button 
-                type="submit" 
-                className="w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700 transition"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <div className="bg-white p-6 border border-gray-300 rounded shadow-sm">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Contact Information</h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Phone</div>
-                    <div className="text-gray-600">+234 703 064 8418</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Email</div>
-                    <div className="text-gray-600 break-all">hisahtechltd@gmail.com</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Location</div>
-                    <div className="text-gray-600">Minna, Niger State, Nigeria</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 border border-gray-300 rounded shadow-sm">
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Office Address</h3>
-              <div className="text-gray-600 leading-relaxed">
-                Suite B23/B22, Peniel Albarka Plaza<br />
-                Opposite Federal High Court<br />
-                Minna, Niger State, Nigeria
-              </div>
-            </div>
-
-            <div className="bg-blue-50 p-6 border border-blue-200 rounded">
-              <h3 className="text-lg font-bold text-blue-800 mb-2">Business Hours</h3>
-              <div className="text-sm text-gray-700 space-y-1">
-                <div>Monday - Friday: 9:00 AM - 6:00 PM</div>
-                <div>Saturday: 10:00 AM - 4:00 PM</div>
-                <div>Sunday: Closed</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* Footer */}
-      <div className="bg-gray-800 text-white py-6 mt-8">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <div className="mb-3">
-            <Link href="/" className="hover:underline mx-2">Home</Link> |
-            <a href="#" className="hover:underline mx-2">Help</a> |
-            <a href="#" className="hover:underline mx-2">Search</a> |
-            <Link href="/about-us" className="hover:underline mx-2">About</Link> |
-            <Link href="/contact" className="hover:underline mx-2">Contact</Link>
-          </div>
-          <div className="text-gray-400 text-xs">
-            © 2024 Hisah Tech. All rights reserved.
-            <br />Resurrecting electronics since 2015
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
