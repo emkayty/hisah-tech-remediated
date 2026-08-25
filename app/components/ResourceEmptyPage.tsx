@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, BookOpen, FileCode2, Files, FolderSearch, ShieldCheck } from 'lucide-react';
+import EmptyStateOnboarding from './EmptyStateOnboarding';
 
 type ResourceKind = 'bios' | 'schematics' | 'guides';
 
@@ -66,6 +67,7 @@ export default function ResourceEmptyPage({ kind }: { kind: ResourceKind }) {
           </div>
         </div>
       </section>
+      <EmptyStateOnboarding />
     </div>
   );
 }
