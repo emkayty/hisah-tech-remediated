@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Settings, Upload, CreditCard, Users, Files, BarChart } from 'lucide-react';
+import { Settings, Upload, CreditCard, Users, Files, BarChart, BadgeCheck } from 'lucide-react';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/auth/me', { cache: 'no-store' });
       if (!res.ok) {
-        router.push('/?auth=login');
+        router.push('/login');
         return;
       }
       const data = await res.json();
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
       }
       setUser(data.user);
     } catch (error) {
-      router.push('/?auth=login');
+      router.push('/login');
     } finally {
       setLoading(false);
     }
@@ -56,6 +56,13 @@ export default function AdminDashboard() {
       icon: CreditCard,
       href: '/admin/payment-settings',
       color: 'bg-green-500',
+    },
+    {
+      title: 'Membership Control',
+      description: 'Manage plans, prices, access, and activity',
+      icon: BadgeCheck,
+      href: '/admin/membership',
+      color: 'bg-indigo-500',
     },
     {
       title: 'User Management',

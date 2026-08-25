@@ -1,5 +1,4 @@
 import { getDatabase } from '@/lib/db';
-import { PLANS, type PlanId } from '@/lib/plans';
 import { ApiError } from '@/lib/security';
 
 export async function activateStripeOrder(input: {
@@ -19,12 +18,13 @@ export async function activateStripeOrder(input: {
   if (!orders.length) throw new ApiError(404, 'Payment order not found');
 
   const order = orders[0] as Record<string, unknown>;
-  const planId = String(order.plan_id) as PlanId;
-  const plan = PLANS[planId];
-  if (!plan || Number(order.amount_cents) !== plan.amountCents || String(order.currency).toLowerCase() !== plan.currency) {
+  const planId = String(order.plan_id);
+  const plans = await database`SELECT id, amount_cents, currency, duration_days FROM membership_plans WHERE id = ${planId} LIMIT 1`;
+  const plan = plans[0] as Record<string, unknown> | undefined;
+  if (!plan || Number(order.amount_cents) !== Number(plan.amount_cents) || String(order.currency).toLowerCase() !== String(plan.currency).toLowerCase()) {
     throw new ApiError(409, 'Payment order has an invalid plan contract');
   }
-  if (input.amountTotal !== plan.amountCents || input.currency?.toLowerCase() !== plan.currency) {
+  if (input.amountTotal !== Number(plan.amount_cents) || input.currency?.toLowerCase() !== String(plan.currency).toLowerCase()) {
     throw new ApiError(409, 'Provider payment total does not match the order');
   }
 
@@ -36,7 +36,7 @@ export async function activateStripeOrder(input: {
   `;
   if (!alreadyProcessed.length) return;
 
-  const newExpiry = new Date(Date.now() + plan.durationDays * 24 * 60 * 60 * 1000).toISOString();
+  const newExpiry = new Date(Date.now() + Number(plan.duration_days) * 24 * 60 * 60 * 1000).toISOString();
   await database`
     UPDATE payment_orders
     SET status = 'paid', payment_intent_id = ${input.paymentIntentId}, paid_at = NOW(), updated_at = NOW()
@@ -48,5 +48,9 @@ export async function activateStripeOrder(input: {
         subscription_expires_at = GREATEST(COALESCE(subscription_expires_at, NOW()), ${newExpiry}::timestamptz),
         updated_at = NOW()
     WHERE id = ${Number(order.user_id)}
+  `;
+  await database`
+    INSERT INTO membership_activity (target_user_id, plan_id, activity_type, details)
+    VALUES (${Number(order.user_id)}, ${planId}, 'payment_completed', ${JSON.stringify({ orderId: Number(order.id), provider: 'stripe' })}::jsonb)
   `;
 }
