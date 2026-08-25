@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, ChevronDown, FileCode2, Files, Menu, MessageCircle, Wrench, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const primaryLinks = [
   { href: '/bios-files', label: 'BIOS files', icon: Files },
@@ -15,6 +15,18 @@ const primaryLinks = [
 export default function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => { if (active) setSignedIn(Boolean(data?.user)); })
+      .catch(() => { if (active) setSignedIn(false); })
+      .finally(() => { if (active) setSessionChecked(true); });
+    return () => { active = false; };
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -40,8 +52,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="site-header__actions">
-          <Link href="/login" className="button button--quiet">Sign in</Link>
-          <Link href="/signup" className="button button--primary">Create account</Link>
+          {sessionChecked && (signedIn ? <Link href="/dashboard" className="button button--primary">Dashboard</Link> : <><Link href="/login" className="button button--quiet">Sign in</Link><Link href="/signup" className="button button--primary">Create account</Link></>)}
           <button
             type="button"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -64,8 +75,7 @@ export default function SiteHeader() {
             <Link href="/contact" onClick={closeMenu}>Contact support</Link>
           </nav>
           <div className="mobile-menu__actions">
-            <Link href="/login" className="button button--secondary" onClick={closeMenu}>Sign in</Link>
-            <Link href="/signup" className="button button--primary" onClick={closeMenu}>Create an account</Link>
+            {sessionChecked && (signedIn ? <><Link href="/dashboard" className="button button--secondary" onClick={closeMenu}>Dashboard</Link><Link href="/settings/profile" className="button button--primary" onClick={closeMenu}>Your profile</Link></> : <><Link href="/login" className="button button--secondary" onClick={closeMenu}>Sign in</Link><Link href="/signup" className="button button--primary" onClick={closeMenu}>Create an account</Link></>)}
           </div>
           <p className="mobile-menu__note"><ChevronDown size={15} /> Start with the section that matches your repair.</p>
         </div>
