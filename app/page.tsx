@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   FileCode2,
   Files,
+  MessageCircle,
   ShieldCheck,
   Sparkles,
   Wrench,
@@ -97,7 +98,7 @@ export default function HomePage() {
       ? {
           email: String(form.get('email') || ''),
           password: String(form.get('password') || ''),
-          name: String(form.get('name') || ''),
+          name: String(form.get('name') || '').trim() || undefined,
           country: String(form.get('country') || ''),
           whatsapp_number: String(form.get('whatsapp_number') || ''),
         }
@@ -189,6 +190,7 @@ export default function HomePage() {
             <div className="empty-state__actions">
               <Link href="/contact" className="button button--primary">Request a resource <ArrowRight size={16} /></Link>
               <Link href="/repair-guides" className="button button--outline">See repair guides</Link>
+              <Link href="/forum" className="button button--outline"><MessageCircle size={16} /> Visit the forum</Link>
             </div>
           </div>
           <aside className="empty-state__aside">
@@ -241,7 +243,7 @@ export default function HomePage() {
               {authMode === 'signup' && (
                 <>
                   <label><span className="form-label">Your name <small>(optional)</small></span><input className="form-control" name="name" autoComplete="name" placeholder="Name" /></label>
-                  <CountryPhoneField />
+                  <CountryPhoneField detectCountry />
                 </>
               )}
               <label><span className="form-label">Email address</span><input className="form-control" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>

@@ -5,6 +5,7 @@ const productLinks = [
   { href: '/bios-files', label: 'BIOS library' },
   { href: '/schematics', label: 'Schematics' },
   { href: '/repair-guides', label: 'Repair guides' },
+  { href: '/forum', label: 'Forum' },
   { href: '/pricing', label: 'Membership' },
 ];
 

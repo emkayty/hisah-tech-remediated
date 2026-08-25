@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, ChevronDown, FileCode2, Files, Menu, Wrench, X } from 'lucide-react';
+import { BookOpen, ChevronDown, FileCode2, Files, Menu, MessageCircle, Wrench, X } from 'lucide-react';
 import { useState } from 'react';
 
 const primaryLinks = [
   { href: '/bios-files', label: 'BIOS library', icon: Files },
   { href: '/schematics', label: 'Schematics', icon: FileCode2 },
   { href: '/repair-guides', label: 'Repair guides', icon: BookOpen },
+  { href: '/forum', label: 'Forum', icon: MessageCircle },
 ];
 
 export default function SiteHeader() {
@@ -35,7 +36,7 @@ export default function SiteHeader() {
               {label}
             </Link>
           ))}
-          <Link href="/contact" className={isActive('/contact') ? 'site-nav__link site-nav__link--active' : 'site-nav__link'}>Contact</Link>
+            <Link href="/contact" className={isActive('/contact') ? 'site-nav__link site-nav__link--active' : 'site-nav__link'}>Contact</Link>
         </nav>
 
         <div className="site-header__actions">
