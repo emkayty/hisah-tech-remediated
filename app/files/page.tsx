@@ -70,7 +70,7 @@ export default function FilesPage() {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`);
+      const res = await fetch(`/api/auth/me`);
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
@@ -82,7 +82,7 @@ export default function FilesPage() {
 
   const fetchFiles = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files`);
+      const res = await fetch(`/api/files`);
       const data = await res.json();
       setFiles(data.files || []);
     } catch (error) {
@@ -119,7 +119,7 @@ export default function FilesPage() {
     formData.append('description', uploadDescription);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/upload`, {
+      const res = await fetch(`/api/files/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -127,18 +127,18 @@ export default function FilesPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert('File uploaded successfully!');
+        alert('The file was uploaded.');
         setIsUploadOpen(false);
         setUploadFile(null);
         setUploadCategory('');
         setUploadDescription('');
         fetchFiles();
       } else {
-        alert(data.error || 'Upload failed');
+        alert(data.error || 'We could not upload that file.');
       }
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Upload failed');
+      alert('We could not upload that file. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -146,16 +146,16 @@ export default function FilesPage() {
 
   const handleDownload = async (fileId: number, filename: string) => {
     if (!user) {
-      alert('Please login to download files');
+      alert('Please sign in to download files.');
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/download?fileId=${fileId}`);
+      const res = await fetch(`/api/files/download?fileId=${fileId}`);
       
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'Download failed');
+        alert(data.error || 'We could not download that file.');
         return;
       }
 
@@ -173,7 +173,7 @@ export default function FilesPage() {
       fetchFiles();
     } catch (error) {
       console.error('Error downloading file:', error);
-      alert('Download failed');
+      alert('We could not download that file. Please try again.');
     }
   };
 
@@ -181,28 +181,28 @@ export default function FilesPage() {
     if (!confirm('Are you sure you want to delete this file?')) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/${fileId}`, {
+      const res = await fetch(`/api/files/${fileId}`, {
         method: 'DELETE',
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        alert('File deleted successfully!');
+        alert('The file was deleted.');
         fetchFiles();
       } else {
-        alert(data.error || 'Delete failed');
+        alert(data.error || 'We could not delete that file.');
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      alert('Delete failed');
+      alert('We could not delete that file. Please try again.');
     }
   };
 
   // Fetch comments for a file
   const fetchComments = async (fileId: number) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/${fileId}/comments`);
+      const res = await fetch(`/api/files/${fileId}/comments`);
       const data = await res.json();
       setComments(prev => ({ ...prev, [fileId]: data.comments || [] }));
     } catch (error) {
@@ -213,7 +213,7 @@ export default function FilesPage() {
   // Fetch rating for a file
   const fetchRating = async (fileId: number) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/${fileId}/rating`);
+      const res = await fetch(`/api/files/${fileId}/rating`);
       const data = await res.json();
       setRatings(prev => ({ ...prev, [fileId]: data }));
     } catch (error) {
@@ -235,7 +235,7 @@ export default function FilesPage() {
   // Add comment
   const handleAddComment = async (fileId: number) => {
     if (!user) {
-      alert('Please login to comment');
+      alert('Please sign in to comment.');
       return;
     }
 
@@ -243,7 +243,7 @@ export default function FilesPage() {
 
     setAddingComment(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/${fileId}/comments`, {
+      const res = await fetch(`/api/files/${fileId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ comment: newComment }),
@@ -270,7 +270,7 @@ export default function FilesPage() {
     if (!confirm('Delete this comment?')) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/comments/${commentId}`, {
+      const res = await fetch(`/api/files/comments/${commentId}`, {
         method: 'DELETE',
       });
 
@@ -289,12 +289,12 @@ export default function FilesPage() {
   // Rate file
   const handleRate = async (fileId: number, rating: number) => {
     if (!user) {
-      alert('Please login to rate');
+      alert('Please sign in to rate a file.');
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/files/${fileId}/rating`, {
+      const res = await fetch(`/api/files/${fileId}/rating`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rating }),

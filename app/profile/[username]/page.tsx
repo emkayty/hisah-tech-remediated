@@ -33,13 +33,13 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Get current user
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`)
+    fetch('/api/auth/me', { cache: 'no-store' })
       .then(res => res.ok ? res.json() : null)
       .then(data => setCurrentUser(data?.user))
       .catch(() => {});
 
     // Get profile
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/${username}`)
+    fetch(`/api/profile/${encodeURIComponent(username)}`)
       .then(res => {
         if (!res.ok) throw new Error('User not found');
         return res.json();
@@ -57,7 +57,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 flex items-center justify-center">
-        <div className="text-gray-600">Loading profile...</div>
+        <div className="text-gray-600">Loading this profile…</div>
       </div>
     );
   }
@@ -66,10 +66,10 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">User Not Found</h1>
-          <p className="text-gray-600 mb-4">This profile doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Profile not found</h1>
+          <p className="text-gray-600 mb-4">We could not find that profile.</p>
           <Link href="/" className="text-blue-600 hover:underline">
-            Go back home
+            Back to home
           </Link>
         </div>
       </div>

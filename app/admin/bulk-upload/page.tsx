@@ -27,19 +27,19 @@ export default function BulkUploadPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`);
+      const res = await fetch('/api/auth/me', { cache: 'no-store' });
       if (!res.ok) {
-        router.push('/login');
+        router.push('/?auth=login');
         return;
       }
       const data = await res.json();
-      if (!data.user.is_admin) {
+      if (!data.user.isAdmin) {
         router.push('/');
         return;
       }
       setUser(data.user);
     } catch (error) {
-      router.push('/login');
+      router.push('/?auth=login');
     } finally {
       setLoading(false);
     }
@@ -121,7 +121,7 @@ export default function BulkUploadPage() {
         resolve();
       });
 
-      xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/files/upload`);
+      xhr.open('POST', '/api/files/upload');
       xhr.send(formData);
     });
   };

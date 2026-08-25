@@ -115,7 +115,10 @@ export default function HomePage() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setAuthError(data.error || 'We could not complete that request. Please try again.');
+        const fallback = isSignup
+          ? 'Please check your email, password, country, and mobile number.'
+          : 'Please enter your email and password.';
+        setAuthError(data.error === 'Invalid request payload' ? fallback : (data.error || 'We could not complete that request. Please try again.'));
         return;
       }
       setCurrentUser(data.user);
@@ -133,13 +136,13 @@ export default function HomePage() {
         <div className="hero__grid">
           <div className="hero__copy">
             <span className="eyebrow"><Sparkles size={14} /> Repair resources, without the noise</span>
-            <h1>The clear starting point for every <em>repair.</em></h1>
-            <p>Hisah Tech brings the essential technical resources into one calm, focused workspace—so you can spend less time searching and more time fixing.</p>
+            <h1>Find the right next step for every <em>repair.</em></h1>
+            <p>Find repair files, diagrams, and guidance in one place, then get back to the work in front of you.</p>
             <div className="hero__actions">
               <Link href="/bios-files" className="button button--primary">Explore the library <ArrowRight size={17} /></Link>
               <button type="button" className="button button--outline" onClick={() => openAuth('signup')}>Create a free account</button>
             </div>
-            <p className="hero__signal"><span /> The platform is live and ready for verified resources.</p>
+            <p className="hero__signal"><span /> Built for real repair work, with more trusted resources on the way.</p>
           </div>
 
           <div className="hero-card" aria-label="Hisah Tech workflow preview">
@@ -204,7 +207,7 @@ export default function HomePage() {
         <div className="page-shell">
           <div className="section-heading">
             <span className="eyebrow"><CheckCircle2 size={14} /> A simpler way to get moving</span>
-            <h2>Three steps. One clear workflow.</h2>
+            <h2>A simple way to get unstuck.</h2>
           </div>
           <div className="steps-grid">
             <article className="step-card"><span className="step-card__number">01</span><h3>Choose your resource</h3><p>Start with firmware, a schematic, or a repair guide—each path is easy to find from any device.</p></article>
@@ -218,8 +221,8 @@ export default function HomePage() {
         <div className="page-shell" style={{ paddingTop: 0, paddingBottom: 0 }}>
           <div className="cta-band__inner">
             <div>
-              <h2>{currentUser ? `Welcome back${currentUser.name ? `, ${currentUser.name}` : ''}.` : 'Build your repair workflow with Hisah Tech.'}</h2>
-              <p>{currentUser ? 'Your account is ready whenever you need to save, contribute, or explore.' : 'Create an account to take part as the resource library grows.'}</p>
+              <h2>{currentUser ? `Welcome back${currentUser.name ? `, ${currentUser.name}` : ''}.` : 'Keep your repair work moving with Hisah Tech.'}</h2>
+              <p>{currentUser ? 'Your account is ready whenever you want to save a resource, join a discussion, or explore the library.' : 'Create an account to save resources and join the repair community as it grows.'}</p>
             </div>
             {currentUser ? <Link href="/dashboard" className="button">Go to dashboard <ArrowRight size={16} /></Link> : <button type="button" className="button" onClick={() => openAuth('signup')}>Create account <ArrowRight size={16} /></button>}
           </div>
@@ -233,7 +236,7 @@ export default function HomePage() {
               <div>
                 <span className="eyebrow">Hisah Tech account</span>
                 <h2 id="auth-heading">{authMode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
-                <p>{authMode === 'signup' ? 'A few details help us keep the community useful and secure.' : 'Sign in to continue where you left off.'}</p>
+                <p>{authMode === 'signup' ? 'Create your account in a minute. We only ask for the details we need.' : 'Sign in to pick up where you left off.'}</p>
               </div>
               <button type="button" className="icon-button" onClick={closeAuth} aria-label="Close sign in dialog"><X size={18} /></button>
             </div>
@@ -247,11 +250,11 @@ export default function HomePage() {
                 </>
               )}
               <label><span className="form-label">Email address</span><input className="form-control" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
-              <label><span className="form-label">Password</span><input className="form-control" name="password" type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} placeholder={authMode === 'signup' ? 'At least 12 characters' : 'Your password'} minLength={authMode === 'signup' ? 12 : undefined} required /></label>
+              <label><span className="form-label">Password</span><input className="form-control" name="password" type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} placeholder={authMode === 'signup' ? 'At least 12 characters' : 'Your password'} minLength={authMode === 'signup' ? 12 : undefined} required />{authMode === 'signup' && <small className="form-hint">Use at least 12 characters.</small>}</label>
               {authMode === 'login' && <Link href="/forgot-password" className="resource-card__link" onClick={closeAuth}>Forgot your password?</Link>}
-              <button className="button button--primary" type="submit" disabled={submitting}>{submitting ? 'Please wait…' : authMode === 'signup' ? 'Create account' : 'Sign in'} <ArrowRight size={16} /></button>
+              <button className="button button--primary" type="submit" disabled={submitting}>{submitting ? 'Working…' : authMode === 'signup' ? 'Create account' : 'Sign in'} <ArrowRight size={16} /></button>
             </form>
-            <p className="auth-switch">{authMode === 'signup' ? 'Already have an account?' : 'New to Hisah Tech?'} <button type="button" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : 'signup'); setAuthError(''); }}>{authMode === 'signup' ? 'Sign in' : 'Create one'}</button></p>
+            <p className="auth-switch">{authMode === 'signup' ? 'Already have an account?' : 'Need a Hisah Tech account?'} <button type="button" onClick={() => { setAuthMode(authMode === 'signup' ? 'login' : 'signup'); setAuthError(''); }}>{authMode === 'signup' ? 'Sign in' : 'Create an account'}</button></p>
           </div>
         </div>
       )}

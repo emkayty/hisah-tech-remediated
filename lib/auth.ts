@@ -106,8 +106,9 @@ export function assertSameOrigin(request: NextRequest): void {
   if (!origin) return;
 
   const configuredUrl = process.env.NEXT_PUBLIC_APP_URL;
-  const expectedOrigin = configuredUrl ? new URL(configuredUrl).origin : request.nextUrl.origin;
-  if (origin !== expectedOrigin) {
+  const allowedOrigins = new Set([request.nextUrl.origin]);
+  if (configuredUrl) allowedOrigins.add(new URL(configuredUrl).origin);
+  if (!allowedOrigins.has(origin)) {
     throw new ApiError(403, 'Cross-origin request rejected');
   }
 }

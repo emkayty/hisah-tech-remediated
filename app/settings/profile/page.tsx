@@ -25,7 +25,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     // Load current user data
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`)
+    fetch('/api/profile', { cache: 'no-store' })
       .then(res => {
         if (!res.ok) {
           router.push('/');
@@ -59,7 +59,8 @@ export default function EditProfilePage() {
     setMessage('');
 
     try {
-      const values = Object.fromEntries(new FormData(e.currentTarget).entries());
+      const rawValues = Object.fromEntries(new FormData(e.currentTarget).entries());
+      const values = Object.fromEntries(Object.entries(rawValues).map(([key, value]) => [key, typeof value === 'string' && value.trim() === '' ? null : value]));
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -69,15 +70,15 @@ export default function EditProfilePage() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage('Profile updated successfully!');
+        setMessage('Your profile has been updated.');
         setTimeout(() => {
           router.push('/dashboard');
         }, 1500);
       } else {
-        setMessage(data.error || 'Failed to update profile');
+        setMessage(data.error || 'We could not save your profile. Please try again.');
       }
     } catch (error) {
-      setMessage('Failed to update profile');
+      setMessage('A network issue interrupted the save. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -86,7 +87,7 @@ export default function EditProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+        <div className="text-gray-600">Loading your profile…</div>
       </div>
     );
   }
@@ -103,8 +104,8 @@ export default function EditProfilePage() {
             <ArrowLeft size={20} />
             Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">Edit Profile</h1>
-          <p className="text-gray-600 mt-2">Update your public profile information</p>
+          <h1 className="text-3xl font-bold text-gray-800">Your profile</h1>
+          <p className="text-gray-600 mt-2">Keep your contact details and public information up to date.</p>
         </div>
 
         {/* Form */}
@@ -246,7 +247,7 @@ export default function EditProfilePage() {
             ) : (
               <>
                 <Save size={20} />
-                Save Changes
+                Save profile
               </>
             )}
           </button>

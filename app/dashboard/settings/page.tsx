@@ -38,7 +38,7 @@ export default function SettingsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`);
+      const res = await fetch('/api/auth/me', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
@@ -63,7 +63,7 @@ export default function SettingsPage() {
     setProfileMessage('');
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/update-profile`, {
+      const res = await fetch('/api/auth/update-profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileForm),
@@ -73,13 +73,13 @@ export default function SettingsPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setProfileMessage('Profile updated successfully!');
+        setProfileMessage('Your profile has been updated.');
         setUser(data.user);
       } else {
-        setProfileMessage(data.error || 'Failed to update profile');
+        setProfileMessage(data.error || 'We could not save your profile. Please try again.');
       }
     } catch (error) {
-      setProfileMessage('An error occurred');
+      setProfileMessage('A network issue interrupted the save. Please try again.');
     } finally {
       setProfileLoading(false);
     }
@@ -91,19 +91,19 @@ export default function SettingsPage() {
     setPasswordMessage('');
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordMessage('New passwords do not match');
+      setPasswordMessage('The new passwords do not match.');
       setPasswordLoading(false);
       return;
     }
 
-    if (passwordForm.newPassword.length < 6) {
-      setPasswordMessage('Password must be at least 6 characters');
+    if (passwordForm.newPassword.length < 12) {
+      setPasswordMessage('Use at least 12 characters for your new password.');
       setPasswordLoading(false);
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/change-password`, {
+      const res = await fetch('/api/auth/change-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,13 +116,13 @@ export default function SettingsPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setPasswordMessage('Password changed successfully!');
+        setPasswordMessage('Your password has been changed.');
         setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       } else {
-        setPasswordMessage(data.error || 'Failed to change password');
+        setPasswordMessage(data.error || 'We could not change your password. Please try again.');
       }
     } catch (error) {
-      setPasswordMessage('An error occurred');
+      setPasswordMessage('A network issue interrupted the password change. Please try again.');
     } finally {
       setPasswordLoading(false);
     }
@@ -136,7 +136,7 @@ export default function SettingsPage() {
     setDeleteLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/delete-account`, {
+      const res = await fetch('/api/auth/delete-account', {
         method: 'DELETE',
         credentials: 'include'
       });

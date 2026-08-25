@@ -21,7 +21,7 @@ export default function SiteFooter() {
               <span className="brand__tagline">Repair intelligence</span>
             </span>
           </div>
-          <p>A calmer, clearer home for technical repair resources and practical diagnostics.</p>
+          <p>Practical repair resources, useful guidance, and a community that helps you move forward.</p>
           <Link href="/contact" className="footer-contact">Talk to support <ArrowUpRight size={15} /></Link>
         </div>
         <div>
@@ -42,7 +42,7 @@ export default function SiteFooter() {
       </div>
       <div className="site-footer__bottom">
         <p>© {new Date().getFullYear()} Hisah Tech. Built for practical repair work.</p>
-        <p>Clear resources. Better fixes.</p>
+        <p>Developed By Ace Technologies.</p>
       </div>
     </footer>
   );

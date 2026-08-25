@@ -29,7 +29,7 @@ export default function MessagesPage() {
 
   const fetchConversations = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/messages/conversations`);
+      const res = await fetch('/api/messages/conversations', { cache: 'no-store' });
 
       if (res.ok) {
         const data = await res.json();

@@ -6,13 +6,14 @@ import { sendWelcomeEmail } from '@/lib/email';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { apiError, ApiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
+import { findCountry } from '@/lib/countries';
 
 const signupSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   password: z.string().min(12).max(128),
   name: z.string().trim().min(1).max(120).optional(),
-  country: z.string().trim().min(2).max(100),
-  whatsapp_number: z.string().trim().min(7).max(32),
+  country: z.string().trim().refine((value) => Boolean(findCountry(value)), 'Choose a valid country'),
+  whatsapp_number: z.string().trim().regex(/^\+\d{7,15}$/, 'Enter a valid international mobile number'),
 });
 
 export async function POST(request: NextRequest) {

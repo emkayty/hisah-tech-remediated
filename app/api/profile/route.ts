@@ -3,6 +3,7 @@ import { assertSameOrigin, requireUser } from '@/lib/auth';
 import { getDatabase } from '@/lib/db';
 import { apiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
+import { findCountry } from '@/lib/countries';
 
 const profileSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
@@ -11,9 +12,25 @@ const profileSchema = z.object({
   location: z.string().trim().max(160).nullable().optional(),
   website: z.string().url().max(2048).nullable().optional(),
   company: z.string().trim().max(160).nullable().optional(),
-  country: z.string().trim().min(2).max(100).optional(),
-  whatsapp_number: z.string().trim().min(7).max(32).optional(),
+  country: z.string().trim().refine((value) => Boolean(findCountry(value)), 'Choose a valid country').nullable().optional(),
+  whatsapp_number: z.string().trim().regex(/^\+\d{7,15}$/, 'Enter a valid international mobile number').nullable().optional(),
 });
+
+export async function GET(request: NextRequest) {
+  try {
+    const principal = await requireUser(request);
+    const database = getDatabase();
+    const users = await database`
+      SELECT id, username, email, name, bio, avatar_url, location, website, company, country, whatsapp_number, created_at
+      FROM users
+      WHERE id = ${principal.id}
+      LIMIT 1
+    `;
+    return NextResponse.json({ user: users[0] ?? null });
+  } catch (error) {
+    return apiError(error);
+  }
+}
 
 export async function PUT(request: NextRequest) {
   try {
