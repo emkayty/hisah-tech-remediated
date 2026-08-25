@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Wrench } from 'lucide-react';
 
 const productLinks = [
-  { href: '/bios-files', label: 'BIOS library' },
+  { href: '/bios-files', label: 'BIOS files' },
   { href: '/schematics', label: 'Schematics' },
   { href: '/repair-guides', label: 'Repair guides' },
   { href: '/forum', label: 'Forum' },
@@ -18,11 +18,11 @@ export default function SiteFooter() {
             <span className="brand__mark" aria-hidden="true"><Wrench size={18} strokeWidth={2.5} /></span>
             <span className="brand__copy">
               <span className="brand__name">Hisah<span>Tech</span></span>
-              <span className="brand__tagline">Repair intelligence</span>
+              <span className="brand__tagline">Repair resources</span>
             </span>
           </div>
-          <p>Practical repair resources, useful guidance, and a community that helps you move forward.</p>
-          <Link href="/contact" className="footer-contact">Talk to support <ArrowUpRight size={15} /></Link>
+          <p>Practical repair resources and a focused community for technicians, repairers, and curious problem-solvers.</p>
+          <Link href="/contact" className="footer-contact">Contact support <ArrowUpRight size={15} /></Link>
         </div>
         <div>
           <h2>Explore</h2>
@@ -41,7 +41,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <div className="site-footer__bottom">
-        <p>© {new Date().getFullYear()} Hisah Tech. Built for practical repair work.</p>
+        <p>© {new Date().getFullYear()} Hisah Tech. Practical tools for better repairs.</p>
         <p>Developed By Ace Technologies.</p>
       </div>
     </footer>

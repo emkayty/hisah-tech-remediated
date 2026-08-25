@@ -23,7 +23,7 @@ type CurrentUser = { email: string; name?: string | null; username?: string | nu
 const resources = [
   {
     href: '/bios-files',
-    title: 'BIOS library',
+    title: 'BIOS files',
     description: 'Find firmware resources through a clean, device-first catalog built for practical work.',
     icon: Files,
     action: 'Browse BIOS files',
@@ -135,29 +135,29 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero__grid">
           <div className="hero__copy">
-            <span className="eyebrow"><Sparkles size={14} /> Repair resources, without the noise</span>
-            <h1>Find the right next step for every <em>repair.</em></h1>
-            <p>Find repair files, diagrams, and guidance in one place, then get back to the work in front of you.</p>
+            <span className="eyebrow"><Sparkles size={14} /> Tools for practical repairs</span>
+            <h1>Get clear, practical help for your next <em>repair.</em></h1>
+            <p>Find firmware, schematics, repair notes, and people who understand the work. Everything is arranged to help you diagnose the problem and move on.</p>
             <div className="hero__actions">
-              <Link href="/bios-files" className="button button--primary">Explore the library <ArrowRight size={17} /></Link>
+              <Link href="/bios-files" className="button button--primary">Browse BIOS files <ArrowRight size={17} /></Link>
               <button type="button" className="button button--outline" onClick={() => openAuth('signup')}>Create a free account</button>
             </div>
-            <p className="hero__signal"><span /> Built for real repair work, with more trusted resources on the way.</p>
+            <p className="hero__signal"><span /> Clear information, useful conversations, and no inflated activity.</p>
           </div>
 
           <div className="hero-card" aria-label="Hisah Tech workflow preview">
             <div className="hero-card__top">
-              <span className="hero-card__pill">Focused workflow</span>
-              <span className="hero-card__status"><b /> Ready when you are</span>
+              <span className="hero-card__pill">Repair workspace</span>
+              <span className="hero-card__status"><b /> Open to everyone</span>
             </div>
             <div className="hero-card__panel">
-              <small>Start with the essentials</small>
-              <h2>Find the right next step.</h2>
-              <p>Choose a resource type, identify the device, and work with a simpler repair process.</p>
+              <small>Start with the information you have</small>
+              <h2>Start with the basics.</h2>
+              <p>Choose a section, identify the device, and keep the important details in one place.</p>
               <div className="hero-card__steps">
-                <div className="hero-card__step"><span>1</span> Select the resource you need</div>
-                <div className="hero-card__step"><span>2</span> Search by device or board</div>
-                <div className="hero-card__step"><span>3</span> Work from verified information</div>
+                <div className="hero-card__step"><span>1</span> Choose a resource section</div>
+                <div className="hero-card__step"><span>2</span> Search by model or board</div>
+                <div className="hero-card__step"><span>3</span> Ask when you need another view</div>
               </div>
             </div>
           </div>
@@ -167,9 +167,9 @@ export default function HomePage() {
       <section className="feature-section">
         <div className="page-shell">
           <div className="section-heading">
-            <span className="eyebrow"><Wrench size={14} /> Built around real repair work</span>
-            <h2>Everything is organized around the job in front of you.</h2>
-            <p>Instead of a cluttered forum feed, you get a clear path to the technical information that matters.</p>
+            <span className="eyebrow"><Wrench size={14} /> Find your way around</span>
+            <h2>Three useful places to start.</h2>
+            <p>Go straight to the section that matches the job: look up a file, check a diagram, read a guide, or ask the community.</p>
           </div>
           <div className="resource-grid">
             {resources.map(({ href, title, description, icon: Icon, action }) => (
@@ -188,8 +188,8 @@ export default function HomePage() {
         <div className="empty-state">
           <div>
             <span className="empty-state__icon"><ShieldCheck size={25} /></span>
-            <h2 id="library-status-heading">A clean library, ready for trusted resources.</h2>
-            <p>All demonstration material has been removed. New BIOS files, schematics, and guides will appear here as they are added and reviewed—keeping the experience honest, useful, and easy to trust.</p>
+            <h2 id="library-status-heading">The library is growing one useful resource at a time.</h2>
+            <p>Some sections are still being filled. When you cannot find what you need, send us the model and repair details so the next addition is useful to someone doing the same work.</p>
             <div className="empty-state__actions">
               <Link href="/contact" className="button button--primary">Request a resource <ArrowRight size={16} /></Link>
               <Link href="/repair-guides" className="button button--outline">See repair guides</Link>
@@ -197,8 +197,8 @@ export default function HomePage() {
             </div>
           </div>
           <aside className="empty-state__aside">
-            <strong>Designed for clarity</strong>
-            <p>No inflated counters, fake activity, or sample member profiles. Just a straightforward place to build a quality repair library.</p>
+            <strong>What you can expect</strong>
+            <p>Published resources and real discussions only, with clear links and no invented activity.</p>
           </aside>
         </div>
       </section>
@@ -206,13 +206,13 @@ export default function HomePage() {
       <section className="how-section">
         <div className="page-shell">
           <div className="section-heading">
-            <span className="eyebrow"><CheckCircle2 size={14} /> A simpler way to get moving</span>
-            <h2>A simple way to get unstuck.</h2>
+            <span className="eyebrow"><CheckCircle2 size={14} /> Keep the process simple</span>
+            <h2>Move from problem to next step.</h2>
           </div>
           <div className="steps-grid">
-            <article className="step-card"><span className="step-card__number">01</span><h3>Choose your resource</h3><p>Start with firmware, a schematic, or a repair guide—each path is easy to find from any device.</p></article>
-            <article className="step-card"><span className="step-card__number">02</span><h3>Search with confidence</h3><p>Use the simplest relevant device, board, or model detail to narrow your result without unnecessary friction.</p></article>
-            <article className="step-card"><span className="step-card__number">03</span><h3>Make the next repair decision</h3><p>Use the resource as a practical next step, then return whenever you need another piece of the puzzle.</p></article>
+            <article className="step-card"><span className="step-card__number">01</span><h3>Choose where to look</h3><p>Open the section that matches your task instead of searching through unrelated pages.</p></article>
+            <article className="step-card"><span className="step-card__number">02</span><h3>Share the right details</h3><p>Use the model, board number, symptoms, and steps already tried to make the answer easier to find.</p></article>
+            <article className="step-card"><span className="step-card__number">03</span><h3>Keep working</h3><p>Use what you find, ask a follow-up question when needed, and return to the same workspace later.</p></article>
           </div>
         </div>
       </section>
@@ -222,7 +222,7 @@ export default function HomePage() {
           <div className="cta-band__inner">
             <div>
               <h2>{currentUser ? `Welcome back${currentUser.name ? `, ${currentUser.name}` : ''}.` : 'Keep your repair work moving with Hisah Tech.'}</h2>
-              <p>{currentUser ? 'Your account is ready whenever you want to save a resource, join a discussion, or explore the library.' : 'Create an account to save resources and join the repair community as it grows.'}</p>
+              <p>{currentUser ? 'Your account is ready for discussions, saved work, and the resource library.' : 'Create a free account to join discussions and keep your repair work together.'}</p>
             </div>
             {currentUser ? <Link href="/dashboard" className="button">Go to dashboard <ArrowRight size={16} /></Link> : <button type="button" className="button" onClick={() => openAuth('signup')}>Create account <ArrowRight size={16} /></button>}
           </div>

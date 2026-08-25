@@ -26,11 +26,11 @@ export default function ForumPage() {
         fetch('/api/forum/categories', { cache: 'no-store' }),
         fetch(`/api/forum/threads${category ? `?category=${encodeURIComponent(category)}` : ''}`, { cache: 'no-store' }),
       ]);
-      if (!categoryResponse.ok || !threadResponse.ok) throw new Error('The forum is temporarily unavailable.');
+      if (!categoryResponse.ok || !threadResponse.ok) throw new Error('We could not reach the discussions right now. Please try again.');
       setCategories(await categoryResponse.json());
       setThreads(await threadResponse.json());
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The forum is temporarily unavailable.');
+      setError(cause instanceof Error ? cause.message : 'We could not reach the discussions right now. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -81,8 +81,7 @@ export default function ForumPage() {
         </aside>
         <div className="forum-content">
           <div className="forum-content__heading"><div><span className="eyebrow"><BookOpen size={14} /> Community knowledge</span><h2>{category ? categories.find((item) => item.slug === category)?.name : 'Latest discussions'}</h2></div><span className="forum-count">{visibleThreads.length} {visibleThreads.length === 1 ? 'discussion' : 'discussions'}</span></div>
-          {error && <div className="form-error" role="alert">{error}</div>}
-          {loading ? <div className="forum-empty"><p>Loading discussions…</p></div> : visibleThreads.length === 0 ? <div className="forum-empty"><span className="content-empty__icon"><ShieldCheck size={24} /></span><h3>{query ? 'No discussions match that search.' : 'The forum is ready for its first discussion.'}</h3><p>{query ? 'Try a device model, symptom, or category.' : 'Ask a real repair question and give the community a useful place to begin. No sample threads are being shown.'}</p><button type="button" className="button button--primary" onClick={() => setShowComposer(true)}><Plus size={16} /> Start the first discussion</button></div> : <div className="thread-list">{visibleThreads.map((thread) => <Link className="thread-card" key={thread.id} href={`/forum/${thread.id}`}><div><span className="thread-card__category">{thread.category_name}</span><h3>{thread.title}</h3><p>{thread.body}</p><small>Started by {thread.author_name} · {thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</small></div><ArrowRight size={18} /></Link>)}</div>}
+          {error ? <div className="forum-empty forum-empty--error" role="alert"><span className="content-empty__icon"><ShieldCheck size={24} /></span><h3>We could not load the discussions.</h3><p>{error}</p><button type="button" className="button button--primary" onClick={() => void loadForum()}>Try again <ArrowRight size={16} /></button></div> : loading ? <div className="forum-empty"><p>Loading discussions…</p></div> : visibleThreads.length === 0 ? <div className="forum-empty"><span className="content-empty__icon"><ShieldCheck size={24} /></span><h3>{query ? 'No discussions match that search.' : 'The forum is ready for its first discussion.'}</h3><p>{query ? 'Try a device model, symptom, or category.' : 'Ask a repair question with the model, symptoms, measurements, and steps you have already tried.'}</p><button type="button" className="button button--primary" onClick={() => setShowComposer(true)}><Plus size={16} /> Start a discussion</button></div> : <div className="thread-list">{visibleThreads.map((thread) => <Link className="thread-card" key={thread.id} href={`/forum/${thread.id}`}><div><span className="thread-card__category">{thread.category_name}</span><h3>{thread.title}</h3><p>{thread.body}</p><small>Started by {thread.author_name} · {thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</small></div><ArrowRight size={18} /></Link>)}</div>}
         </div>
       </section>
 

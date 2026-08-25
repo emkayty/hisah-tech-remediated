@@ -31,16 +31,16 @@ export default function EmptyStateOnboarding() {
     <aside className="onboarding-card" aria-label="Getting started guide">
       <div className="onboarding-card__topline">
         <span className="onboarding-card__icon"><Lightbulb size={18} /></span>
-        <span className="eyebrow">New here? Start in three steps.</span>
+        <span className="eyebrow">New to Hisah Tech?</span>
         <button type="button" className="onboarding-card__close" onClick={dismiss} aria-label="Dismiss getting started guide"><X size={17} /></button>
       </div>
-      <p className="onboarding-card__intro">This library is intentionally empty right now. Here is the quickest way to make it useful for your repair.</p>
+      <p className="onboarding-card__intro">Start with the resource you need, or tell us what is missing. The site is built to keep repair work focused and easy to follow.</p>
       <ol className="onboarding-steps">
-        <li><span>1</span><div><strong>Choose your resource.</strong><small>Start with BIOS, schematics, or guides.</small></div></li>
-        <li><span>2</span><div><strong>Tell us what you need.</strong><small>Send the device or board detail through support.</small></div></li>
-        <li><span>3</span><div><strong>Return when it is ready.</strong><small>New verified resources will appear here.</small></div></li>
+        <li><span>1</span><div><strong>Choose a section.</strong><small>Browse firmware, schematics, guides, or discussions.</small></div></li>
+        <li><span>2</span><div><strong>Give useful details.</strong><small>Include the model, board, fault, and steps tried.</small></div></li>
+        <li><span>3</span><div><strong>Use the next step.</strong><small>Save your place, ask a question, and keep working.</small></div></li>
       </ol>
-      <button type="button" className="onboarding-card__done" onClick={dismiss}><Check size={15} /> Got it <ArrowRight size={14} /></button>
+      <button type="button" className="onboarding-card__done" onClick={dismiss}><Check size={15} /> Understood <ArrowRight size={14} /></button>
     </aside>
   );
 }

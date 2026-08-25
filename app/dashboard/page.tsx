@@ -55,14 +55,14 @@ export default function DashboardPage() {
       <section className="dashboard-hero">
         <span className="eyebrow"><ShieldCheck size={14} /> Your Hisah Tech workspace</span>
         <h1>Welcome back, {name}.</h1>
-        <p>Your account is ready. As you explore and use the resource library, your relevant activity will appear here—without any synthetic statistics or sample history.</p>
+        <p>Your account is ready. Save useful work, join a discussion, and return here when you want to pick up where you left off.</p>
       </section>
 
       <div className="dashboard-grid">
         <section className="dashboard-empty">
           <span className="dashboard-empty__icon"><UserRound size={24} /></span>
-          <h2>A fresh, focused workspace.</h2>
-          <p>You do not have any activity yet. Start with a resource library, or tell us what you need and help shape what comes next.</p>
+          <h2>Your workspace is ready.</h2>
+          <p>You have not saved or posted anything yet. Start with a resource, or ask the community about the repair in front of you.</p>
           <div className="empty-state__actions">
             <Link href="/bios-files" className="button button--primary">Explore resources <ArrowRight size={16} /></Link>
             <Link href="/contact" className="button button--outline">Request support</Link>

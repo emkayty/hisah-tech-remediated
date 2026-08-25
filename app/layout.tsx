@@ -6,10 +6,10 @@ import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Hisah Tech | Repair intelligence',
+    default: 'Hisah Tech | Repair resources',
     template: '%s | Hisah Tech',
   },
-  description: 'Premium repair resources, schematics, BIOS files, and practical technical guidance.',
+  description: 'Practical repair resources, schematics, BIOS files, repair guides, and a focused community.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

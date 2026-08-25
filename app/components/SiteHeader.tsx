@@ -6,7 +6,7 @@ import { BookOpen, ChevronDown, FileCode2, Files, Menu, MessageCircle, Wrench, X
 import { useState } from 'react';
 
 const primaryLinks = [
-  { href: '/bios-files', label: 'BIOS library', icon: Files },
+  { href: '/bios-files', label: 'BIOS files', icon: Files },
   { href: '/schematics', label: 'Schematics', icon: FileCode2 },
   { href: '/repair-guides', label: 'Repair guides', icon: BookOpen },
   { href: '/forum', label: 'Forum', icon: MessageCircle },
@@ -26,7 +26,7 @@ export default function SiteHeader() {
           <span className="brand__mark" aria-hidden="true"><Wrench size={18} strokeWidth={2.5} /></span>
           <span className="brand__copy">
             <span className="brand__name">Hisah<span>Tech</span></span>
-            <span className="brand__tagline">Repair intelligence</span>
+            <span className="brand__tagline">Repair resources</span>
           </span>
         </Link>
 
@@ -61,13 +61,13 @@ export default function SiteHeader() {
             {primaryLinks.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href} onClick={closeMenu}><Icon size={18} /> {label}</Link>
             ))}
-            <Link href="/contact" onClick={closeMenu}>Contact &amp; support</Link>
+            <Link href="/contact" onClick={closeMenu}>Contact support</Link>
           </nav>
           <div className="mobile-menu__actions">
             <Link href="/?auth=login" className="button button--secondary" onClick={closeMenu}>Sign in</Link>
             <Link href="/?auth=signup" className="button button--primary" onClick={closeMenu}>Create an account</Link>
           </div>
-          <p className="mobile-menu__note"><ChevronDown size={15} /> Find the right repair resource in a few taps.</p>
+          <p className="mobile-menu__note"><ChevronDown size={15} /> Start with the section that matches your repair.</p>
         </div>
       )}
     </header>

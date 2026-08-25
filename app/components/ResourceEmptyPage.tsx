@@ -8,7 +8,7 @@ const content: Record<ResourceKind, { eyebrow: string; title: string; descriptio
   bios: {
     eyebrow: 'Firmware resources',
     title: 'BIOS files, organized for the work ahead.',
-    description: 'The BIOS library has been cleared of demonstration material. Verified firmware resources will appear here as they are added to the collection.',
+    description: 'The BIOS library is being built with verified firmware files that are safe to identify, download, and use for supported repairs.',
     icon: Files,
     tone: '#2848ff',
     primaryLabel: 'Request a BIOS file',
@@ -19,7 +19,7 @@ const content: Record<ResourceKind, { eyebrow: string; title: string; descriptio
   schematics: {
     eyebrow: 'Technical diagrams',
     title: 'Schematics without the clutter.',
-    description: 'There are no sample diagrams in this library. New schematics will be added only after they are ready to be a genuinely useful repair reference.',
+    description: 'Find board-level diagrams and service references as they are added and checked for clarity.',
     icon: FileCode2,
     tone: '#087e68',
     primaryLabel: 'Request a schematic',
@@ -30,7 +30,7 @@ const content: Record<ResourceKind, { eyebrow: string; title: string; descriptio
   guides: {
     eyebrow: 'Practical learning',
     title: 'Guidance that earns its place on the bench.',
-    description: 'The guide collection is currently empty by design. The next resources added here will be concise, practical, and focused on real repair decisions.',
+    description: 'Short, practical repair notes are being added for common faults, tools, and diagnostic steps.',
     icon: BookOpen,
     tone: '#7956e9',
     primaryLabel: 'Suggest a guide',
@@ -58,9 +58,9 @@ export default function ResourceEmptyPage({ kind }: { kind: ResourceKind }) {
       <section className="catalog-empty">
         <div className="catalog-empty__visual"><FolderSearch size={34} /></div>
         <div>
-          <span className="eyebrow"><ShieldCheck size={14} /> Quality over quantity</span>
-          <h2>Nothing misleading. Nothing to sift through.</h2>
-          <p>We removed all placeholder material so this section can grow into a dependable, easy-to-navigate resource. If you need something specific, tell us what you are working on.</p>
+          <span className="eyebrow"><ShieldCheck size={14} /> Library status</span>
+          <h2>No resources have been added yet.</h2>
+          <p>There are no files here yet. If you need a particular model, board, schematic, or repair topic, send us the details and we will use them to shape the collection.</p>
           <div className="empty-state__actions">
             <Link href={item.primaryHref} className="button button--primary">{item.primaryLabel} <ArrowRight size={16} /></Link>
             <Link href={item.secondaryHref} className="button button--outline">{item.secondaryLabel}</Link>
