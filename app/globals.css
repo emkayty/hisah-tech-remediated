@@ -361,3 +361,26 @@ button:disabled { cursor: not-allowed; opacity: .62; }
 .reply-form { display: grid; gap: 1rem; margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: 1rem; background: #f8f9fd; }
 @media (max-width: 800px) { .forum-layout { grid-template-columns: 1fr; } .forum-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); } .forum-search { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .forum-sidebar { grid-template-columns: 1fr; } .forum-category small { max-width: none; } .forum-content__heading { align-items: flex-start; flex-direction: column; gap: .45rem; } .thread-card p { white-space: normal; } .thread-hero, .forum-empty { padding: 1.3rem; } .thread-post { grid-template-columns: 34px minmax(0, 1fr); padding: .9rem; } .thread-post__avatar { width: 34px; height: 34px; border-radius: .75rem; } }
+
+.auth-page { max-width: 1040px; }
+.auth-page__back { margin-bottom: 1.25rem; }
+.auth-page__back a { display: inline-flex; align-items: center; gap: .4rem; color: var(--primary); font-size: .85rem; font-weight: 800; }
+.auth-page__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, .78fr); gap: 3rem; align-items: center; }
+.auth-page__intro { max-width: 560px; }
+.auth-page__mark { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 1.35rem; border-radius: 1rem; color: #fff; background: linear-gradient(135deg, var(--primary), #6d54ff); box-shadow: 0 12px 24px rgba(40,72,255,.22); }
+.auth-page__intro h1 { margin: .65rem 0 .85rem; letter-spacing: -.065em; font-size: clamp(2.5rem, 5vw, 4.3rem); line-height: .98; }
+.auth-page__intro > p { max-width: 500px; margin: 0; color: var(--muted); font-size: 1.03rem; line-height: 1.7; }
+.auth-page__note { display: grid; gap: .25rem; margin-top: 1.75rem; padding: .95rem 1rem; border-left: 3px solid var(--mint); border-radius: 0 .85rem .85rem 0; background: #effcf8; }
+.auth-page__note strong { font-size: .86rem; }
+.auth-page__note span { color: var(--ink-soft); font-size: .82rem; }
+.auth-page__card { padding: 1.5rem; border: 1px solid var(--line); border-radius: 1.3rem; background: #fff; box-shadow: var(--shadow-md); }
+.auth-page__card-heading { margin-bottom: 1.15rem; }
+.auth-page__card-heading h2 { margin: 0 0 .3rem; letter-spacing: -.04em; font-size: 1.35rem; }
+.auth-page__card-heading p { margin: 0; color: var(--muted); font-size: .84rem; }
+.auth-page__switch { margin: 1rem 0 0; color: var(--muted); text-align: center; font-size: .85rem; }
+.auth-page__switch a { color: var(--primary); font-weight: 800; }
+@media (max-width: 760px) {
+  .auth-page__layout { grid-template-columns: 1fr; gap: 1.75rem; }
+  .auth-page__intro h1 { font-size: clamp(2.35rem, 11vw, 3.6rem); }
+  .auth-page__card { padding: 1.2rem; }
+}

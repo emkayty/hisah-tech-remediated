@@ -41,7 +41,7 @@ export default function SiteHeader() {
 
         <div className="site-header__actions">
           <Link href="/?auth=login" className="button button--quiet">Sign in</Link>
-          <Link href="/?auth=signup" className="button button--primary">Create account</Link>
+          <Link href="/signup" className="button button--primary">Create account</Link>
           <button
             type="button"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -65,7 +65,7 @@ export default function SiteHeader() {
           </nav>
           <div className="mobile-menu__actions">
             <Link href="/?auth=login" className="button button--secondary" onClick={closeMenu}>Sign in</Link>
-            <Link href="/?auth=signup" className="button button--primary" onClick={closeMenu}>Create an account</Link>
+            <Link href="/signup" className="button button--primary" onClick={closeMenu}>Create an account</Link>
           </div>
           <p className="mobile-menu__note"><ChevronDown size={15} /> Start with the section that matches your repair.</p>
         </div>
