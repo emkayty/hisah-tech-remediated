@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, User, MapPin, Globe, Briefcase, Image } from 'lucide-react';
+import CountryPhoneField from '@/app/components/CountryPhoneField';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -16,7 +17,9 @@ export default function EditProfilePage() {
     avatar_url: '',
     location: '',
     website: '',
-    company: ''
+    company: '',
+    country: '',
+    whatsapp_number: ''
   });
 
   useEffect(() => {
@@ -38,7 +41,9 @@ export default function EditProfilePage() {
             avatar_url: data.user.avatar_url || '',
             location: data.user.location || '',
             website: data.user.website || '',
-            company: data.user.company || ''
+            company: data.user.company || '',
+            country: data.user.country || '',
+            whatsapp_number: data.user.whatsapp_number || ''
           });
         }
         setLoading(false);
@@ -48,16 +53,17 @@ export default function EditProfilePage() {
       });
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     setMessage('');
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile`, {
+      const values = Object.fromEntries(new FormData(e.currentTarget).entries());
+      const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(values)
       });
 
       const data = await res.json();
@@ -118,6 +124,10 @@ export default function EditProfilePage() {
               className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="John Doe"
             />
+          </div>
+
+          <div className="mb-6">
+            <CountryPhoneField key={`${formData.country}-${formData.whatsapp_number}`} defaultCountry={formData.country} defaultPhone={formData.whatsapp_number} />
           </div>
 
           {/* Bio */}

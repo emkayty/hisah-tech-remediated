@@ -11,6 +11,8 @@ const profileSchema = z.object({
   location: z.string().trim().max(160).nullable().optional(),
   website: z.string().url().max(2048).nullable().optional(),
   company: z.string().trim().max(160).nullable().optional(),
+  country: z.string().trim().min(2).max(100).optional(),
+  whatsapp_number: z.string().trim().min(7).max(32).optional(),
 });
 
 export async function PUT(request: NextRequest) {
@@ -27,9 +29,11 @@ export async function PUT(request: NextRequest) {
           location = ${profile.location ?? null},
           website = ${profile.website ?? null},
           company = ${profile.company ?? null},
+          country = COALESCE(${profile.country ?? null}, country),
+          whatsapp_number = COALESCE(${profile.whatsapp_number ?? null}, whatsapp_number),
           updated_at = NOW()
       WHERE id = ${principal.id}
-      RETURNING id, username, email, name, bio, avatar_url, location, website, company, created_at
+      RETURNING id, username, email, name, bio, avatar_url, location, website, company, country, whatsapp_number, created_at
     `;
 
     return NextResponse.json({ message: 'Profile updated successfully', user: users[0] });

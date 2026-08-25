@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import CountryPhoneField from './components/CountryPhoneField';
 import {
   ArrowRight,
   BookOpen,
@@ -238,14 +239,13 @@ export default function HomePage() {
             {authError && <div className="form-error" role="alert">{authError}</div>}
             <form className="auth-form" onSubmit={handleAuth}>
               {authMode === 'signup' && (
-                <div className="auth-grid">
+                <>
                   <label><span className="form-label">Your name <small>(optional)</small></span><input className="form-control" name="name" autoComplete="name" placeholder="Name" /></label>
-                  <label><span className="form-label">Country</span><input className="form-control" name="country" autoComplete="country-name" placeholder="Country" required /></label>
-                </div>
+                  <CountryPhoneField />
+                </>
               )}
               <label><span className="form-label">Email address</span><input className="form-control" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
               <label><span className="form-label">Password</span><input className="form-control" name="password" type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} placeholder={authMode === 'signup' ? 'At least 12 characters' : 'Your password'} minLength={authMode === 'signup' ? 12 : undefined} required /></label>
-              {authMode === 'signup' && <label><span className="form-label">WhatsApp number</span><input className="form-control" name="whatsapp_number" type="tel" autoComplete="tel" placeholder="Include country code" required /></label>}
               {authMode === 'login' && <Link href="/forgot-password" className="resource-card__link" onClick={closeAuth}>Forgot your password?</Link>}
               <button className="button button--primary" type="submit" disabled={submitting}>{submitting ? 'Please wait…' : authMode === 'signup' ? 'Create account' : 'Sign in'} <ArrowRight size={16} /></button>
             </form>
