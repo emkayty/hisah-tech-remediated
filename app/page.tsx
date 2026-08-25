@@ -19,6 +19,7 @@ import {
 
 type AuthMode = 'login' | 'signup';
 type CurrentUser = { email: string; name?: string | null; username?: string | null };
+type ForumThreadPreview = { id: number; title: string; body: string; category_name: string; author_name: string; reply_count: number; updated_at: string };
 
 const resources = [
   {
@@ -51,9 +52,16 @@ export default function HomePage() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [authError, setAuthError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [forumThreads, setForumThreads] = useState<ForumThreadPreview[]>([]);
+  const [forumLoading, setForumLoading] = useState(true);
+  const [forumError, setForumError] = useState('');
 
   useEffect(() => {
     void checkAuth();
+  }, []);
+
+  useEffect(() => {
+    void loadForumActivity();
   }, []);
 
   useEffect(() => {
@@ -72,6 +80,19 @@ export default function HomePage() {
       if (data.user) setCurrentUser(data.user);
     } catch {
       // Visitors can use the resource library without signing in.
+    }
+  }
+
+  async function loadForumActivity() {
+    try {
+      const response = await fetch('/api/forum/threads', { cache: 'no-store' });
+      if (!response.ok) throw new Error('We could not load recent discussions.');
+      const data = await response.json();
+      setForumThreads(Array.isArray(data) ? data.slice(0, 3) : []);
+    } catch (cause) {
+      setForumError(cause instanceof Error ? cause.message : 'We could not load recent discussions.');
+    } finally {
+      setForumLoading(false);
     }
   }
 
@@ -181,6 +202,17 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="forum-activity-section">
+        <div className="page-shell">
+          <div className="section-heading forum-activity__heading">
+            <span className="eyebrow"><MessageCircle size={14} /> From the forum</span>
+            <h2>Recent repair conversations.</h2>
+            <p>See what people are working through, or start a discussion with the details you have.</p>
+          </div>
+          {forumLoading ? <div className="forum-activity__status">Loading recent discussions…</div> : forumError ? <div className="forum-activity__status forum-activity__status--error" role="status">{forumError} <Link href="/forum">Open the forum <ArrowRight size={15} /></Link></div> : forumThreads.length === 0 ? <div className="forum-activity__empty"><div><h3>No discussions yet.</h3><p>Be the first to ask a repair question. Include the model, symptoms, measurements, and steps already tried.</p></div><Link href="/forum" className="button button--primary">Open the forum <ArrowRight size={16} /></Link></div> : <div className="forum-activity__grid">{forumThreads.map((thread) => <Link href={`/forum/${thread.id}`} className="forum-activity__card" key={thread.id}><span>{thread.category_name}</span><h3>{thread.title}</h3><p>{thread.body}</p><small>{thread.author_name} · {thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</small><ArrowRight size={16} /></Link>)}</div>}
         </div>
       </section>
 

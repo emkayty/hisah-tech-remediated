@@ -33,8 +33,8 @@ export default function SiteFooter() {
         <div>
           <h2>Account</h2>
           <ul>
-            <li><Link href="/?auth=signup">Create account</Link></li>
-            <li><Link href="/?auth=login">Sign in</Link></li>
+            <li><Link href="/signup">Create account</Link></li>
+            <li><Link href="/login">Sign in</Link></li>
             <li><Link href="/forgot-password">Password help</Link></li>
             <li><Link href="/contact">Contact us</Link></li>
           </ul>

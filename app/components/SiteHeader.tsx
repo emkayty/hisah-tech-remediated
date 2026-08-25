@@ -40,7 +40,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="site-header__actions">
-          <Link href="/?auth=login" className="button button--quiet">Sign in</Link>
+          <Link href="/login" className="button button--quiet">Sign in</Link>
           <Link href="/signup" className="button button--primary">Create account</Link>
           <button
             type="button"
@@ -64,7 +64,7 @@ export default function SiteHeader() {
             <Link href="/contact" onClick={closeMenu}>Contact support</Link>
           </nav>
           <div className="mobile-menu__actions">
-            <Link href="/?auth=login" className="button button--secondary" onClick={closeMenu}>Sign in</Link>
+            <Link href="/login" className="button button--secondary" onClick={closeMenu}>Sign in</Link>
             <Link href="/signup" className="button button--primary" onClick={closeMenu}>Create an account</Link>
           </div>
           <p className="mobile-menu__note"><ChevronDown size={15} /> Start with the section that matches your repair.</p>
