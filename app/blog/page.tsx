@@ -1,25 +1,6 @@
+'use client';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { ArrowRight, BookMarked, PenLine, Sparkles } from 'lucide-react';
-
-export default function BlogPage() {
-  return (
-    <div className="page-shell content-page">
-      <section className="content-hero">
-        <span className="eyebrow"><Sparkles size={14} /> Technical notes and practical thinking</span>
-        <h1>Useful repair knowledge, when you need it.</h1>
-        <p>We are preparing short technical notes and explainers for common repair problems. Until then, use the guides and forum to find practical next steps.</p>
-      </section>
-      <section className="content-empty">
-        <span className="content-empty__icon"><BookMarked size={28} /></span>
-        <div>
-          <h2>No articles are published yet.</h2>
-          <p>New articles will focus on clear explanations, useful checks, and repair decisions you can apply at the bench.</p>
-          <div className="empty-state__actions">
-            <Link href="/repair-guides" className="button button--primary">Explore repair guides <ArrowRight size={16} /></Link>
-            <Link href="/contact" className="button button--outline"><PenLine size={16} /> Suggest a topic</Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
+type Post = { id: number; slug: string; title: string; excerpt: string; category: string; cover_image_url?: string; published_at?: string };
+export default function BlogPage() { const [posts, setPosts] = useState<Post[]>([]); const [loading, setLoading] = useState(true); useEffect(() => { fetch('/api/blog').then((r) => r.json()).then((data) => setPosts(data.posts || [])).finally(() => setLoading(false)); }, []); return <div className="page-shell content-page"><section className="content-hero"><span className="eyebrow"><Sparkles size={14} /> How-to repair guides</span><h1>Clear steps for the workbench.</h1><p>Short, practical articles for diagnosing common faults, choosing the right files, and working through a repair with less guesswork.</p></section>{loading ? <div className="content-empty"><p>Loading articles…</p></div> : posts.length ? <section className="blog-grid" aria-label="How-to articles">{posts.map((post) => <article className="blog-card" key={post.id}>{post.cover_image_url && <img src={post.cover_image_url} alt="" /> }<span className="eyebrow">{post.category}</span><h2>{post.title}</h2><p>{post.excerpt}</p><Link href={`/blog/${post.slug}`} className="text-link">Read the guide <ArrowRight size={15} /></Link></article>)}</section> : <section className="content-empty"><span className="content-empty__icon"><BookMarked size={28} /></span><div><h2>How-to guides are on the way.</h2><p>Use the repair guides and forum today, or suggest a topic that would help you at the bench.</p><div className="empty-state__actions"><Link href="/repair-guides" className="button button--primary">Explore repair guides <ArrowRight size={16} /></Link><Link href="/contact" className="button button--outline"><PenLine size={16} /> Suggest a topic</Link></div></div></section>}</div>; }

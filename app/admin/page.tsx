@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Settings, Upload, CreditCard, Users, Files, BarChart, BadgeCheck } from 'lucide-react';
+import { Settings, Upload, CreditCard, Users, Files, BarChart, BadgeCheck, BookOpen } from 'lucide-react';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -69,6 +69,13 @@ export default function AdminDashboard() {
       icon: BadgeCheck,
       href: '/admin/membership',
       color: 'bg-indigo-500',
+    },
+    {
+      title: 'How-to Articles',
+      description: 'Write, edit, publish, and archive repair guides',
+      icon: BookOpen,
+      href: '/admin/blog',
+      color: 'bg-cyan-600',
     },
     {
       title: 'User Management',
