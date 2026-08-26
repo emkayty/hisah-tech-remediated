@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ users: 0, files: 0, activeSubscriptions: 0, revenueCents: 0 });
 
   useEffect(() => {
     checkAuth();
@@ -27,6 +28,11 @@ export default function AdminDashboard() {
         return;
       }
       setUser(data.user);
+      const overview = await fetch('/api/admin/overview', { cache: 'no-store' });
+      if (overview.ok) {
+        const overviewData = await overview.json();
+        setStats(overviewData.stats || { users: 0, files: 0, activeSubscriptions: 0, revenueCents: 0 });
+      }
     } catch (error) {
       router.push('/login');
     } finally {
@@ -100,7 +106,7 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.username}!</p>
+          <p className="text-gray-600">Welcome back, {user?.name || user?.email || 'administrator'}.</p>
         </div>
 
         {/* Admin Tools Grid */}
@@ -136,19 +142,19 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Stats</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
-              <div className="text-3xl font-bold text-blue-500">—</div>
+              <div className="text-3xl font-bold text-blue-500">{stats.users}</div>
               <div className="text-sm text-gray-600">Total Users</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-500">—</div>
+              <div className="text-3xl font-bold text-green-500">{stats.files}</div>
               <div className="text-sm text-gray-600">Total Files</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-purple-500">—</div>
+              <div className="text-3xl font-bold text-purple-500">{stats.activeSubscriptions}</div>
               <div className="text-sm text-gray-600">Active Subscriptions</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-orange-500">—</div>
+              <div className="text-3xl font-bold text-orange-500">${(stats.revenueCents / 100).toFixed(2)}</div>
               <div className="text-sm text-gray-600">Total Revenue</div>
             </div>
           </div>
