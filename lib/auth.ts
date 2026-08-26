@@ -11,6 +11,8 @@ export type AuthenticatedUser = {
   name: string | null;
   username: string | null;
   isAdmin: boolean;
+  role: string;
+  accountStatus: string;
   subscriptionPlan: string | null;
   subscriptionExpiresAt: string | null;
 };
@@ -22,6 +24,8 @@ function serializeUser(row: Record<string, unknown>): AuthenticatedUser {
     name: row.name ? String(row.name) : null,
     username: row.username ? String(row.username) : null,
     isAdmin: Boolean(row.is_admin),
+    role: String(row.role || (row.is_admin ? 'admin' : 'member')),
+    accountStatus: String(row.account_status || 'active'),
     subscriptionPlan: row.subscription_plan ? String(row.subscription_plan) : null,
     subscriptionExpiresAt: row.subscription_expires_at ? String(row.subscription_expires_at) : null,
   };
@@ -67,7 +71,7 @@ export async function getAuthenticatedUser(request: NextRequest): Promise<Authen
 
   const database = getDatabase();
   const rows = await database`
-    SELECT u.id, u.email, u.name, u.username, u.is_admin,
+    SELECT u.id, u.email, u.name, u.username, u.is_admin, u.role, u.account_status,
            u.subscription_plan, u.subscription_expires_at
     FROM sessions s
     INNER JOIN users u ON u.id = s.user_id
@@ -76,7 +80,10 @@ export async function getAuthenticatedUser(request: NextRequest): Promise<Authen
     LIMIT 1
   `;
 
-  return rows.length ? serializeUser(rows[0] as Record<string, unknown>) : null;
+  if (!rows.length) return null;
+  const user = serializeUser(rows[0] as Record<string, unknown>);
+  if (user.accountStatus !== 'active') return null;
+  return user;
 }
 
 export async function requireUser(request: NextRequest): Promise<AuthenticatedUser> {
