@@ -48,11 +48,11 @@ describe('JSON input boundary', () => {
 });
 
 describe('rate limiter', () => {
-  it('rejects a request after its configured limit', () => {
+  it('rejects a request after its configured limit in development fallback mode', async () => {
     const request = new Request('https://example.test/api', { headers: { 'x-real-ip': '203.0.113.10' } });
     const scope = `test-${Date.now()}-${Math.random()}`;
-    enforceRateLimit(request, scope, 1, 60_000);
-    expect(() => enforceRateLimit(request, scope, 1, 60_000)).toThrow(ApiError);
+    await enforceRateLimit(request, scope, 1, 60_000);
+    await expect(enforceRateLimit(request, scope, 1, 60_000)).rejects.toBeInstanceOf(ApiError);
   });
 });
 

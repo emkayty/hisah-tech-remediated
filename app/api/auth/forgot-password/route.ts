@@ -10,7 +10,7 @@ const genericResponse = { message: 'If an account exists with that email, a pass
 
 export async function POST(request: NextRequest) {
   try {
-    enforceRateLimit(request, 'password-reset-request', 5, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'password-reset-request', 5, 60 * 60 * 1000);
     const { email } = await parseJson(request, requestSchema);
     const database = getDatabase();
     const users = await database`SELECT id, email FROM users WHERE email = ${email} LIMIT 1`;

@@ -11,7 +11,7 @@ const checkoutSchema = z.object({ planId: z.string().regex(/^[a-z0-9_]+$/).max(6
 export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
-    enforceRateLimit(request, 'stripe-checkout', 10, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'stripe-checkout', 10, 60 * 60 * 1000);
     const user = await requireUser(request);
     const { planId } = await parseJson(request, checkoutSchema);
     const database = getDatabase();

@@ -13,7 +13,7 @@ const resetSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    enforceRateLimit(request, 'password-reset-complete', 10, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'password-reset-complete', 10, 60 * 60 * 1000);
     const { token, password } = await parseJson(request, resetSchema);
     const database = getDatabase();
     const passwordHash = await bcrypt.hash(password, 12);

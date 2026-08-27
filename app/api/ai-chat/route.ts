@@ -20,7 +20,7 @@ const systemMessage = {
 export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
-    enforceRateLimit(request, 'ai-chat', 30, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'ai-chat', 30, 60 * 60 * 1000);
     const user = await requireUser(request);
     if (!user.subscriptionPlan || !user.subscriptionExpiresAt || new Date(user.subscriptionExpiresAt) <= new Date()) {
       throw new ApiError(403, 'An active membership is required for AI assistance');

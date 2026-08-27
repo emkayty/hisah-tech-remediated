@@ -13,7 +13,7 @@ const loginSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    enforceRateLimit(request, 'login', 10, 15 * 60 * 1000);
+    await enforceRateLimit(request, 'login', 10, 15 * 60 * 1000);
     const { email, password } = await parseJson(request, loginSchema);
     const database = getDatabase();
     const rows = await database`

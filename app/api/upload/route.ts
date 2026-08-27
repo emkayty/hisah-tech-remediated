@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
     await requireUser(request);
-    enforceRateLimit(request, 'upload', 20, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'upload', 20, 60 * 60 * 1000);
     if (!request.headers.get('content-type')?.includes('multipart/form-data')) {
       throw new ApiError(415, 'Only multipart file uploads are supported');
     }

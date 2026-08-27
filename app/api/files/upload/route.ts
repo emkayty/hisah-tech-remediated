@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
     const admin = await requirePermission(request, 'files.manage');
-    enforceRateLimit(request, 'admin-upload', 40, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'admin-upload', 40, 60 * 60 * 1000);
     if (!request.headers.get('content-type')?.includes('multipart/form-data')) throw new ApiError(415, 'Only multipart file uploads are supported');
     const appId = process.env.APP_ID; const uploadSecret = process.env.APP_UPLOAD_SECRET; const uploadUrl = process.env.APPGEN_UPLOAD_URL;
     if (!appId || !uploadSecret || !uploadUrl) throw new ApiError(503, 'Upload service is not configured');

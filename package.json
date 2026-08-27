@@ -13,6 +13,7 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "audit:prod": "npm audit --omit=dev",
+    "smoke:prod": "node scripts/smoke-test.mjs",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run audit:prod"
   },
   "dependencies": {

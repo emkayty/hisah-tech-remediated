@@ -18,7 +18,7 @@ const signupSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    enforceRateLimit(request, 'signup', 5, 60 * 60 * 1000);
+    await enforceRateLimit(request, 'signup', 5, 60 * 60 * 1000);
     const { email, password, name, country, whatsapp_number } = await parseJson(request, signupSchema);
     const database = getDatabase();
 
