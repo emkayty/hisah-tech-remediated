@@ -45,7 +45,7 @@ export default function MembershipAdminPage() {
 
   async function updateMember(userId: number, action: 'grant' | 'extend' | 'cancel') {
     setError('');
-    try { const response = await fetch('/api/admin/membership/members', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action, planId: action === 'cancel' ? null : memberPlan[userId] || plans.find((plan) => plan.is_active)?.id, durationDays: 30 }) }); if (!response.ok) throw new Error((await response.json()).error || 'Could not update this member.'); await loadData(); }
+    try { const response = await fetch('/api/admin/membership/members', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action, planId: action === 'cancel' ? null : memberPlan[userId] || plans.find((plan) => plan.is_active)?.id }) }); if (!response.ok) throw new Error((await response.json()).error || 'Could not update this member.'); await loadData(); }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not update this member.'); }
   }
 

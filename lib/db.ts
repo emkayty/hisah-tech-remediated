@@ -1,10 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 
 export type DatabaseRow = Record<string, unknown>;
-export type DatabaseClient = (
+export type DatabaseClient = ((
   strings: TemplateStringsArray,
   ...values: unknown[]
-) => Promise<DatabaseRow[]>;
+) => Promise<DatabaseRow[]>) & {
+  transaction: (queries: Promise<DatabaseRow[]>[]) => Promise<DatabaseRow[][]>;
+};
 
 let databaseClient: DatabaseClient | undefined;
 

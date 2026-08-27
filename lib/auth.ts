@@ -109,13 +109,24 @@ export function clearSessionCookie(response: NextResponse): NextResponse {
 }
 
 export function assertSameOrigin(request: NextRequest): void {
-  const origin = request.headers.get('origin');
-  if (!origin) return;
-
   const configuredUrl = process.env.NEXT_PUBLIC_APP_URL;
   const allowedOrigins = new Set([request.nextUrl.origin]);
   if (configuredUrl) allowedOrigins.add(new URL(configuredUrl).origin);
-  if (!allowedOrigins.has(origin)) {
-    throw new ApiError(403, 'Cross-origin request rejected');
+
+  const origin = request.headers.get('origin');
+  if (origin) {
+    if (!allowedOrigins.has(origin)) throw new ApiError(403, 'Cross-origin request rejected');
+    return;
   }
+
+  const referer = request.headers.get('referer');
+  if (referer) {
+    try {
+      if (allowedOrigins.has(new URL(referer).origin)) return;
+    } catch {
+      // Fall through to the same-origin rejection below.
+    }
+  }
+
+  throw new ApiError(403, 'Same-origin request metadata is required');
 }

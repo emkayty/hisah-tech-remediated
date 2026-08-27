@@ -9,6 +9,7 @@ const primaryLinks = [
   { href: '/bios-files', label: 'BIOS files', icon: Files },
   { href: '/schematics', label: 'Schematics', icon: FileCode2 },
   { href: '/repair-guides', label: 'Repair guides', icon: BookOpen },
+  { href: '/blog', label: 'Blog', icon: BookOpen },
   { href: '/forum', label: 'Forum', icon: MessageCircle },
 ];
 

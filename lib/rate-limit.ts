@@ -15,6 +15,11 @@ export function enforceRateLimit(
   windowMs: number,
 ): void {
   const now = Date.now();
+  if (buckets.size > 10_000) {
+    for (const [bucketKey, bucket] of buckets) {
+      if (bucket.resetAt <= now) buckets.delete(bucketKey);
+    }
+  }
   const key = `${scope}:${clientKey(request)}`;
   const entry = buckets.get(key);
 

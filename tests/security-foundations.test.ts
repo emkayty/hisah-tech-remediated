@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { isPlanId, PLANS } from '../lib/plans';
 import { enforceRateLimit } from '../lib/rate-limit';
-import { ApiError, parseJson, randomToken, tokenDigest } from '../lib/security';
+import { assertSameOrigin } from '../lib/auth';
+import { ApiError, apiError, parseJson, randomToken, tokenDigest } from '../lib/security';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
 describe('server-owned subscription catalog', () => {
@@ -51,5 +53,25 @@ describe('rate limiter', () => {
     const scope = `test-${Date.now()}-${Math.random()}`;
     enforceRateLimit(request, scope, 1, 60_000);
     expect(() => enforceRateLimit(request, scope, 1, 60_000)).toThrow(ApiError);
+  });
+});
+
+describe('browser request protections', () => {
+  it('accepts an explicitly same-origin mutation', () => {
+    const request = new NextRequest('https://example.test/api', { method: 'POST', headers: { origin: 'https://example.test' } });
+    expect(() => assertSameOrigin(request)).not.toThrow();
+  });
+
+  it('rejects missing or cross-origin mutation metadata', () => {
+    const missing = new NextRequest('https://example.test/api', { method: 'POST' });
+    const crossOrigin = new NextRequest('https://example.test/api', { method: 'POST', headers: { origin: 'https://attacker.example' } });
+    expect(() => assertSameOrigin(missing)).toThrow(ApiError);
+    expect(() => assertSameOrigin(crossOrigin)).toThrow(ApiError);
+  });
+
+  it('classifies missing database configuration as a dependency outage', async () => {
+    const response = apiError(new Error('DATABASE_URL is not configured'));
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ error: 'Service temporarily unavailable' });
   });
 });

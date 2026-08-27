@@ -17,6 +17,9 @@ export function apiError(error: unknown): NextResponse {
   if (error instanceof ApiError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
+  if (error instanceof Error && error.message === 'DATABASE_URL is not configured') {
+    return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+  }
 
   console.error('Unhandled API error', error);
   return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
