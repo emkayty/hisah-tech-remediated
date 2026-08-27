@@ -76,7 +76,7 @@ export default function ChromeToWindowsPage() {
       alert('Please enter your Chromebook model name');
       return;
     }
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/firmware/download?model=${modelName.toLowerCase().trim()}`;
+    const url = `/api/firmware/download?model=${encodeURIComponent(modelName.toLowerCase().trim())}`;
     setFirmwareUrl(url);
     setShowDownload(true);
   };

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { assertSameOrigin, revokeAllSessions } from '@/lib/auth';
 import { getDatabase } from '@/lib/db';
 import { requirePermission, ROLES } from '@/lib/rbac';
-import { apiError, parseJson } from '@/lib/security';
+import { apiError, ApiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
 
 const updateSchema = z.object({ userId: z.number().int().positive(), role: z.enum(ROLES), accountStatus: z.enum(['active', 'suspended', 'pending']) });
@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest) {
     assertSameOrigin(request);
     const actor = await requirePermission(request, 'users.manage');
     const payload = await parseJson(request, updateSchema);
-    if (payload.userId === actor.id) throw new Error('You cannot change your own role or account status here');
+    if (payload.userId === actor.id) throw new ApiError(400, 'You cannot change your own role or account status here');
     const database = getDatabase();
     const users = await database`SELECT id, role, account_status FROM users WHERE id = ${payload.userId} LIMIT 1`;
     if (!users.length) return NextResponse.json({ error: 'Member not found' }, { status: 404 });
