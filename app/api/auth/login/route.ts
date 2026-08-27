@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = await parseJson(request, loginSchema);
     const database = getDatabase();
     const rows = await database`
-      SELECT id, email, password_hash, name, username
+      SELECT id, email, password_hash, name, username, role, account_status
       FROM users
       WHERE email = ${email}
       LIMIT 1
@@ -29,6 +29,9 @@ export async function POST(request: NextRequest) {
 
     if (!user || !passwordMatches) {
       throw new ApiError(401, 'Invalid email or password');
+    }
+    if (user.account_status && user.account_status !== 'active') {
+      throw new ApiError(403, 'This account is not active. Contact support if you need help.');
     }
 
     const token = await createSession(Number(user.id));

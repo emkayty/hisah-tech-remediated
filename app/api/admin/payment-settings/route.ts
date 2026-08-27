@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertSameOrigin, requireAdmin } from '@/lib/auth';
+import { assertSameOrigin } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac';
 import { getDatabase } from '@/lib/db';
 import { apiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
@@ -11,7 +12,7 @@ const settingsSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin(request);
+    await requirePermission(request, 'payments.manage');
     const database = getDatabase();
     const settings = await database`
       SELECT provider, enabled, updated_at
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     assertSameOrigin(request);
-    const admin = await requireAdmin(request);
+    const admin = await requirePermission(request, 'payments.manage');
     const { provider, enabled } = await parseJson(request, settingsSchema);
     const database = getDatabase();
     await database`

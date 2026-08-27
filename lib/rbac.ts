@@ -10,6 +10,7 @@ export const PERMISSIONS = {
   'membership.manage': ['admin'],
   'payments.manage': ['admin'],
   'files.manage': ['admin', 'editor'],
+  'content.manage': ['admin', 'editor'],
   'forum.moderate': ['admin', 'moderator'],
   'support.manage': ['admin', 'support'],
   'analytics.view': ['admin', 'editor', 'support'],

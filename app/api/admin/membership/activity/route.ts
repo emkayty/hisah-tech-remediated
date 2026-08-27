@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac';
 import { getDatabase } from '@/lib/db';
 import { apiError } from '@/lib/security';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin(request);
+    await requirePermission(request, 'membership.manage');
     const database = getDatabase();
     const activity = await database`
       SELECT a.id, a.activity_type, a.details, a.created_at, a.plan_id,

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, X, Check, AlertCircle, Loader2, FileImage, FileVideo, FileAudio, FileText, File, Trash2, Archive, Binary } from 'lucide-react';
+import { roleHasPermission } from '@/lib/rbac';
 
 interface FileWithProgress {
   file: File;
@@ -29,17 +30,17 @@ export default function BulkUploadPage() {
     try {
       const res = await fetch('/api/auth/me', { cache: 'no-store' });
       if (!res.ok) {
-        router.push('/?auth=login');
+        router.push('/login');
         return;
       }
       const data = await res.json();
-      if (!data.user.isAdmin) {
+      if (!roleHasPermission(data.user.role || (data.user.isAdmin ? 'admin' : 'member'), 'files.manage')) {
         router.push('/');
         return;
       }
       setUser(data.user);
     } catch (error) {
-      router.push('/?auth=login');
+      router.push('/login');
     } finally {
       setLoading(false);
     }

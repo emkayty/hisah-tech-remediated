@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertSameOrigin, requireAdmin } from '@/lib/auth';
+import { assertSameOrigin } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac';
 import { getDatabase } from '@/lib/db';
 import { apiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
@@ -18,7 +19,7 @@ const planSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin(request);
+    await requirePermission(request, 'membership.manage');
     const database = getDatabase();
     const plans = await database`SELECT id, name, description, amount_cents, currency, duration_days, features, is_active, display_order, updated_at FROM membership_plans ORDER BY display_order ASC, id ASC LIMIT 100`;
     return NextResponse.json({ plans });
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     assertSameOrigin(request);
-    const admin = await requireAdmin(request);
+    const admin = await requirePermission(request, 'membership.manage');
     const payload = await parseJson(request, planSchema);
     const database = getDatabase();
     const existing = await database`SELECT id FROM membership_plans WHERE id = ${payload.id} LIMIT 1`;
