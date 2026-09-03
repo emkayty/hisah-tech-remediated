@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Upload, X, Check, AlertCircle, Loader2, FileImage, FileVideo, FileAudio, FileText, File, Trash2, Archive, Binary } from 'lucide-react';
 import { roleHasPermission } from '@/lib/rbac';
 
+type UploadCategory = 'bios' | 'schematics';
+
 interface FileWithProgress {
   file: File;
+  category: UploadCategory;
   progress: number;
   status: 'pending' | 'uploading' | 'success' | 'error';
   error?: string;
@@ -16,6 +19,7 @@ interface FileWithProgress {
 export default function BulkUploadPage() {
   const router = useRouter();
   const [files, setFiles] = useState<FileWithProgress[]>([]);
+  const [category, setCategory] = useState<UploadCategory>('bios');
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -73,6 +77,7 @@ export default function BulkUploadPage() {
   const addFiles = (newFiles: File[]) => {
     const filesWithProgress: FileWithProgress[] = newFiles.map(file => ({
       file,
+      category,
       progress: 0,
       status: 'pending'
     }));
@@ -82,6 +87,7 @@ export default function BulkUploadPage() {
   const uploadFile = async (fileWithProgress: FileWithProgress, index: number) => {
     const formData = new FormData();
     formData.append('file', fileWithProgress.file);
+    formData.append('category', fileWithProgress.category);
 
     return new Promise<void>((resolve) => {
       const xhr = new XMLHttpRequest();
@@ -96,7 +102,7 @@ export default function BulkUploadPage() {
       });
 
       xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
+        if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const response = JSON.parse(xhr.responseText);
             setFiles(prev => prev.map((f, i) => 
@@ -208,6 +214,14 @@ export default function BulkUploadPage() {
           </button>
           <h1 className="text-3xl font-bold text-gray-800">Bulk File Upload</h1>
           <p className="text-gray-600 mt-2">Upload multiple files at once</p>
+          <div className="mt-4 max-w-md">
+            <label htmlFor="upload-category" className="block text-sm font-medium text-gray-700 mb-2">Resource category</label>
+            <select id="upload-category" value={category} onChange={(event) => setCategory(event.target.value as UploadCategory)} className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm" disabled={isUploading}>
+              <option value="bios">BIOS files</option>
+              <option value="schematics">Schematics</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Newly selected files will be assigned to this category.</p>
+          </div>
         </div>
 
         {/* Stats */}
@@ -317,6 +331,7 @@ export default function BulkUploadPage() {
                     {/* File Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs rounded-full bg-blue-50 px-2 py-1 text-blue-700">{fileWithProgress.category === 'bios' ? 'BIOS' : 'Schematics'}</span>
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {fileWithProgress.file.name}
                         </p>
