@@ -5,7 +5,7 @@ import { requirePermission, ROLES } from '@/lib/rbac';
 import { apiError, ApiError, parseJson } from '@/lib/security';
 import { z } from 'zod';
 
-const updateSchema = z.object({ userId: z.number().int().positive(), role: z.enum(ROLES), accountStatus: z.enum(['active', 'suspended', 'pending']) });
+const updateSchema = z.object({ userId: z.coerce.number().int().positive(), role: z.enum(ROLES), accountStatus: z.enum(['active', 'suspended', 'pending']) });
 
 export async function GET(request: NextRequest) {
   try {
