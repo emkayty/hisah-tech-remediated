@@ -1,5 +1,6 @@
 export type MembershipLevel = 'free' | 'standard' | 'premium';
 export type MembershipStatus = 'free' | 'active' | 'expired';
+export type RequiredMembershipLevel = Exclude<MembershipLevel, 'free'>;
 
 export type MembershipSnapshot = {
   level: MembershipLevel;
@@ -8,6 +9,12 @@ export type MembershipSnapshot = {
   planId: string | null;
   expiresAt: string | null;
 };
+
+const MEMBERSHIP_LEVEL_ORDER: Record<MembershipLevel, number> = { free: 0, standard: 1, premium: 2 };
+
+export function membershipHasAccess(snapshot: MembershipSnapshot, requiredLevel: RequiredMembershipLevel): boolean {
+  return snapshot.status === 'active' && MEMBERSHIP_LEVEL_ORDER[snapshot.level] >= MEMBERSHIP_LEVEL_ORDER[requiredLevel];
+}
 
 export function getMembershipSnapshot(planId: string | null, expiresAt: string | null, now = new Date()): MembershipSnapshot {
   if (!planId || !expiresAt) {

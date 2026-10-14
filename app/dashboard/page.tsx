@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowRight, BookOpen, CalendarDays, Crown, FileCode2, Files, LogOut, ShieldCheck, UserRound } from 'lucide-react';
-import { formatMembershipExpiry, type MembershipSnapshot } from '@/lib/membership';
+import { ArrowRight, BookOpen, CalendarDays, Crown, FileCode2, Files, LockKeyhole, LogOut, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
+import AIAssistant from '@/components/AIAssistant';
+import { formatMembershipExpiry, membershipHasAccess, type MembershipSnapshot } from '@/lib/membership';
 
 type User = {
   email: string;
@@ -12,6 +13,8 @@ type User = {
   username?: string | null;
   membership: MembershipSnapshot;
 };
+
+type Plan = { id: string; name: string; description: string; amount_cents: number; currency: string; duration_days: number; features: string[]; is_active: boolean };
 
 const destinations = [
   { href: '/bios-files', title: 'BIOS library', copy: 'Search trusted firmware resources as they are added.', icon: Files },
@@ -22,10 +25,13 @@ const destinations = [
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [checkoutPlan, setCheckoutPlan] = useState('');
+  const [upgradeError, setUpgradeError] = useState('');
 
   useEffect(() => {
-    async function loadUser() {
+    async function loadDashboard() {
       try {
         const response = await fetch('/api/auth/me', { cache: 'no-store' });
         const data = await response.json();
@@ -34,14 +40,44 @@ export default function DashboardPage() {
           return;
         }
         setUser(data.user);
+        if (data.user.membership?.status !== 'active') {
+          const plansResponse = await fetch('/api/membership/plans', { cache: 'no-store' });
+          if (plansResponse.ok) {
+            const plansData = await plansResponse.json();
+            setPlans(Array.isArray(plansData.plans) ? plansData.plans : []);
+          }
+        }
       } catch {
         router.replace('/?auth=login');
       } finally {
         setLoading(false);
       }
     }
-    void loadUser();
+    void loadDashboard();
   }, [router]);
+
+  async function startCheckout(planId: string) {
+    setCheckoutPlan(planId);
+    setUpgradeError('');
+    try {
+      const response = await fetch('/api/payments/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await response.json();
+      if (response.status === 401) {
+        router.replace('/?auth=login');
+        return;
+      }
+      if (!response.ok) throw new Error(data.error || 'Checkout is not available right now.');
+      if (!data.checkoutUrl) throw new Error('Checkout did not return a payment link.');
+      window.location.href = data.checkoutUrl;
+    } catch (cause) {
+      setUpgradeError(cause instanceof Error ? cause.message : 'Checkout is not available right now.');
+      setCheckoutPlan('');
+    }
+  }
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -57,6 +93,7 @@ export default function DashboardPage() {
   const name = user.name || user.username || user.email.split('@')[0];
   const membership = user.membership;
   const expiry = formatMembershipExpiry(membership.expiresAt);
+  const hasMemberTools = membershipHasAccess(membership, 'standard');
   const membershipCopy = membership.status === 'active'
     ? expiry ? `Your access is active until ${expiry}.` : 'Your membership is active.'
     : membership.status === 'expired'
@@ -84,9 +121,34 @@ export default function DashboardPage() {
           <p>{membershipCopy}</p>
         </div>
         <div className="membership-card__actions">
-          {membership.status === 'active' ? <Link href="/pricing" className="button button--outline">Manage membership <ArrowRight size={15} /></Link> : <Link href="/pricing" className="button button--primary">View membership plans <ArrowRight size={15} /></Link>}
+          {membership.status === 'active' ? <Link href="/pricing" className="button button--outline">Manage membership <ArrowRight size={15} /></Link> : <a href="#upgrade" className="button button--primary">View upgrade options <ArrowRight size={15} /></a>}
         </div>
       </section>
+
+      <section className="dashboard-access" aria-labelledby="access-heading">
+        <div className="section-heading"><span className="eyebrow">Membership access</span><h2 id="access-heading">Tools available to your level.</h2></div>
+        <div className="dashboard-access__grid">
+          <article className={`access-card ${hasMemberTools ? 'access-card--enabled' : 'access-card--locked'}`}>
+            <span className="access-card__icon">{hasMemberTools ? <Sparkles size={20} /> : <LockKeyhole size={20} />}</span>
+            <div><h3>AI repair assistant</h3><p>{hasMemberTools ? 'Ask focused troubleshooting questions while you work.' : 'Available with an active Standard or Premium membership.'}</p></div>
+            {!hasMemberTools && <a href="#upgrade" className="access-card__action">Unlock with membership <ArrowRight size={14} /></a>}
+          </article>
+          <article className="access-card access-card--enabled">
+            <span className="access-card__icon"><Files size={20} /></span>
+            <div><h3>Public repair library</h3><p>BIOS files, schematics, and repair guides remain available to every account.</p></div>
+            <Link href="/bios-files" className="access-card__action">Browse resources <ArrowRight size={14} /></Link>
+          </article>
+        </div>
+      </section>
+
+      {!hasMemberTools && <section className="dashboard-upgrade" id="upgrade" aria-labelledby="upgrade-heading">
+        <div className="section-heading"><span className="eyebrow"><Crown size={14} /> Upgrade your access</span><h2 id="upgrade-heading">Choose a membership and continue from your dashboard.</h2><p>{membership.status === 'expired' ? 'Your previous access has ended. Choose a plan to restore member tools.' : 'Unlock the AI repair assistant and other member benefits with a secure checkout.'}</p></div>
+        {upgradeError && <div className="form-error" role="alert">{upgradeError}</div>}
+        <div className="dashboard-upgrade__plans">
+          {plans.slice(0, 2).map((plan) => <article className="upgrade-plan" key={plan.id}><span className="eyebrow">{plan.duration_days > 31 ? 'Annual access' : 'Monthly access'}</span><h3>{plan.name}</h3><p>{plan.description}</p><strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: plan.currency.toUpperCase(), maximumFractionDigits: 0 }).format(plan.amount_cents / 100)} <small>/{plan.duration_days > 31 ? 'year' : 'month'}</small></strong><button type="button" className="button button--primary" onClick={() => void startCheckout(plan.id)} disabled={checkoutPlan === plan.id}>{checkoutPlan === plan.id ? 'Opening checkout…' : 'Choose this plan'} <ArrowRight size={15} /></button></article>)}
+        </div>
+        {!plans.length && <p className="membership-status">Membership plans are temporarily unavailable. <Link href="/pricing">Open the full membership page</Link>.</p>}
+      </section>}
 
       <div className="dashboard-grid">
         <section className="dashboard-empty">
@@ -124,6 +186,7 @@ export default function DashboardPage() {
           ))}
         </div>
       </section>
+      {hasMemberTools && <AIAssistant />}
     </div>
   );
 }

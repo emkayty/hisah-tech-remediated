@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db';
 import { ApiError, randomToken, tokenDigest } from '@/lib/security';
-import { getMembershipSnapshot, type MembershipSnapshot } from '@/lib/membership';
+import { getMembershipSnapshot, membershipHasAccess, type MembershipSnapshot, type RequiredMembershipLevel } from '@/lib/membership';
 
 export const SESSION_COOKIE = 'hisah_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
@@ -100,6 +100,14 @@ export async function requireUser(request: NextRequest): Promise<AuthenticatedUs
 export async function requireAdmin(request: NextRequest): Promise<AuthenticatedUser> {
   const user = await requireUser(request);
   if (!user.isAdmin) throw new ApiError(403, 'Administrator access required');
+  return user;
+}
+
+export async function requireMembership(request: NextRequest, requiredLevel: RequiredMembershipLevel): Promise<AuthenticatedUser> {
+  const user = await requireUser(request);
+  if (!membershipHasAccess(user.membership, requiredLevel)) {
+    throw new ApiError(403, `An active ${requiredLevel} membership is required for this feature`);
+  }
   return user;
 }
 

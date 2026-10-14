@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertSameOrigin, requireUser } from '@/lib/auth';
+import { assertSameOrigin, requireMembership } from '@/lib/auth';
 import { getDatabase } from '@/lib/db';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { apiError, ApiError, parseJson } from '@/lib/security';
@@ -21,10 +21,7 @@ export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
     await enforceRateLimit(request, 'ai-chat', 30, 60 * 60 * 1000);
-    const user = await requireUser(request);
-    if (!user.subscriptionPlan || !user.subscriptionExpiresAt || new Date(user.subscriptionExpiresAt) <= new Date()) {
-      throw new ApiError(403, 'An active membership is required for AI assistance');
-    }
+    const user = await requireMembership(request, 'standard');
 
     const { messages } = await parseJson(request, chatSchema);
     const apiKey = process.env.OPENAI_API_KEY;

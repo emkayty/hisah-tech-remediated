@@ -3,7 +3,7 @@ import { isPlanId, PLANS } from '../lib/plans';
 import { enforceRateLimit } from '../lib/rate-limit';
 import { assertSameOrigin } from '../lib/auth';
 import { ApiError, apiError, parseJson, randomToken, tokenDigest } from '../lib/security';
-import { getMembershipSnapshot } from '../lib/membership';
+import { getMembershipSnapshot, membershipHasAccess } from '../lib/membership';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
@@ -29,6 +29,15 @@ describe('inherited membership status', () => {
 
   it('marks an expired subscription instead of granting active access', () => {
     expect(getMembershipSnapshot('standard_monthly', '2025-12-31T23:59:59.000Z', now)).toMatchObject({ level: 'standard', status: 'expired', label: 'Standard membership expired' });
+  });
+
+  it('allows standard features for premium members but not free or expired users', () => {
+    const premium = getMembershipSnapshot('premium_monthly', '2026-02-01T00:00:00.000Z', now);
+    const free = getMembershipSnapshot(null, null, now);
+    const expired = getMembershipSnapshot('standard_monthly', '2025-12-31T23:59:59.000Z', now);
+    expect(membershipHasAccess(premium, 'standard')).toBe(true);
+    expect(membershipHasAccess(free, 'standard')).toBe(false);
+    expect(membershipHasAccess(expired, 'standard')).toBe(false);
   });
 });
 
