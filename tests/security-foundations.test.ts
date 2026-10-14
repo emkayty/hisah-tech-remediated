@@ -3,6 +3,7 @@ import { isPlanId, PLANS } from '../lib/plans';
 import { enforceRateLimit } from '../lib/rate-limit';
 import { assertSameOrigin } from '../lib/auth';
 import { ApiError, apiError, parseJson, randomToken, tokenDigest } from '../lib/security';
+import { getMembershipSnapshot } from '../lib/membership';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
@@ -12,6 +13,22 @@ describe('server-owned subscription catalog', () => {
     expect(isPlanId('premium_monthly')).toBe(true);
     expect(isPlanId('premium_free')).toBe(false);
     expect(PLANS.standard_monthly.amountCents).toBe(900);
+  });
+});
+
+describe('inherited membership status', () => {
+  const now = new Date('2026-01-01T00:00:00.000Z');
+
+  it('defaults accounts without a subscription to free access', () => {
+    expect(getMembershipSnapshot(null, null, now)).toMatchObject({ level: 'free', status: 'free', label: 'Free access' });
+  });
+
+  it('derives the active level from the stored plan and expiry', () => {
+    expect(getMembershipSnapshot('premium_monthly', '2026-02-01T00:00:00.000Z', now)).toMatchObject({ level: 'premium', status: 'active', label: 'Premium membership' });
+  });
+
+  it('marks an expired subscription instead of granting active access', () => {
+    expect(getMembershipSnapshot('standard_monthly', '2025-12-31T23:59:59.000Z', now)).toMatchObject({ level: 'standard', status: 'expired', label: 'Standard membership expired' });
   });
 });
 

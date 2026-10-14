@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db';
 import { ApiError, randomToken, tokenDigest } from '@/lib/security';
+import { getMembershipSnapshot, type MembershipSnapshot } from '@/lib/membership';
 
 export const SESSION_COOKIE = 'hisah_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
@@ -15,9 +16,12 @@ export type AuthenticatedUser = {
   accountStatus: string;
   subscriptionPlan: string | null;
   subscriptionExpiresAt: string | null;
+  membership: MembershipSnapshot;
 };
 
 function serializeUser(row: Record<string, unknown>): AuthenticatedUser {
+  const subscriptionPlan = row.subscription_plan ? String(row.subscription_plan) : null;
+  const subscriptionExpiresAt = row.subscription_expires_at ? String(row.subscription_expires_at) : null;
   return {
     id: Number(row.id),
     email: String(row.email),
@@ -26,8 +30,9 @@ function serializeUser(row: Record<string, unknown>): AuthenticatedUser {
     isAdmin: Boolean(row.is_admin),
     role: String(row.role || (row.is_admin ? 'admin' : 'member')),
     accountStatus: String(row.account_status || 'active'),
-    subscriptionPlan: row.subscription_plan ? String(row.subscription_plan) : null,
-    subscriptionExpiresAt: row.subscription_expires_at ? String(row.subscription_expires_at) : null,
+    subscriptionPlan,
+    subscriptionExpiresAt,
+    membership: getMembershipSnapshot(subscriptionPlan, subscriptionExpiresAt),
   };
 }
 
